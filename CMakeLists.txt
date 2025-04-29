@@ -11,7 +11,6 @@ set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps")
 add_executable(ITD102_GB_Emulator "${SRC_DIR}/main.c"
         src/lib/emu.c
         src/include/emu.h
-        src/lib/common.c
         src/include/common.h
         src/lib/bus.c
         src/include/bus.h

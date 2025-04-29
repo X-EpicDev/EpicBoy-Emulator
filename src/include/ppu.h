@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-void ppu_init();
-void ppu_tick();
+void ppuInit();
+void ppuTick();
 
 #endif //PPU_H

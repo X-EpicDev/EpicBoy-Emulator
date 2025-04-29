@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-void cpu_init();
-bool cpu_step();
+void cpuInit();
+bool cpuStep();
 
 #endif //CPU_H

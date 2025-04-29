@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-void timer_init();
-void timer_tick();
+void timerInit();
+void timerTick();
 
 #endif //TIMER_H

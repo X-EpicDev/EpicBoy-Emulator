@@ -26,4 +26,8 @@ bool cartLoad(char *cart);
 uint8_t cartRead(uint16_t address);
 void cartWrite(uint16_t address, uint8_t value);
 
+bool cart_need_save();
+void cart_battery_load();
+void cart_battery_save();
+
 #endif //CART_H

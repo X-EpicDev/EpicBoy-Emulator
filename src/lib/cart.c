@@ -1,7 +1,5 @@
 #include "../inc/cart.h"
 
-
-
 typedef struct {
     char filename [1024];
     uint32_t romSize;
@@ -271,6 +269,4 @@ uint8_t cartRead(uint16_t address) {
 
 void cartWrite(uint16_t address, uint8_t value) {
 	//ROM ONLY
-
-	NOIMPL;
 }

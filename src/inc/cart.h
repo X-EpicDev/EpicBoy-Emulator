@@ -23,4 +23,7 @@ typedef struct {
 
 bool cartLoad(char *cart);
 
+uint8_t cartRead(uint16_t address);
+void cartWrite(uint16_t address, uint8_t value);
+
 #endif //CART_H

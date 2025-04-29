@@ -262,3 +262,15 @@ bool cartLoad(char *cart) {
 
     return true;
 }
+
+uint8_t cartRead(uint16_t address) {
+	//ROM ONLY RN
+
+	return ctx.romData[address];
+}
+
+void cartWrite(uint16_t address, uint8_t value) {
+	//ROM ONLY
+
+	NOIMPL;
+}

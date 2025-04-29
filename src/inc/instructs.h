@@ -38,6 +38,10 @@ typedef enum {
     RegF,   //Register F
     RegH,   //Register H
     RegL,   //Register L
+    RegAF,  //Registers A and F Together
+    RegBC,  //Registers B and C Together
+    RegDE,  //Registers D and E Together
+    RegHL,  //Registers H and L Together
     RegPC,  //Program Counter
     RegSP   //Stack Pointer
 } registerType;
@@ -113,5 +117,7 @@ typedef struct {
     conditionType condition;
     uint8_t param;
 } instruction;
+
+instruction *instructionByOpCode(uint8_t opcode);
 
 #endif //INSTRUCTS_H

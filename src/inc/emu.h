@@ -13,4 +13,6 @@ int emuRun(int argc, char *argv[]);
 
 emuContext *emu_get_context();
 
+void emuCycles(int cpuCycles);
+
 #endif //EMU_H

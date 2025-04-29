@@ -52,4 +52,9 @@ int emuRun(int argc, char **argv) {
 
         ctx.ticks++;
     }
+
+    return 0;
+}
+
+void emuCycles(int cpuCycles) {
 }

@@ -13,6 +13,7 @@ add_executable(ITD102_GB_Emulator
         "src/inc/emu.h" "src/inc/bus.h" "src/inc/cart.h" "src/inc/cpu.h" "src/inc/ppu.h" "src/inc/timer.h" "src/inc/common.h"
         src/inc/instructs.h
         src/lib/instructions.c
+        src/lib/cpuUtil.c
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #

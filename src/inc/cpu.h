@@ -23,6 +23,7 @@ typedef struct {
     //currently fetched data
     uint16_t fetchData;
     uint16_t memoryDestination;
+    bool destinationIsMemory;
     uint8_t currentOPCode;
     instruction *CurrentInstruction;
 
@@ -32,5 +33,14 @@ typedef struct {
 
 void cpuInit();
 bool cpuStep();
+
+typedef void (*IN_PROC)(CPUContext *);
+
+IN_PROC inst_get_processor(instructionType type);
+
+#define CPU_FLAG_Z BIT(ctx->regs.f, 7)
+#define CPU_FLAG_C BIT(ctx->regs.f, 4)
+
+uint16_t cpu_read_reg(registerType rt);
 
 #endif //CPU_H

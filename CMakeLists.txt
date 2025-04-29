@@ -2,13 +2,28 @@
 cmake_minimum_required(VERSION 3.30)
 project(ITD102_GB_Emulator C)
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD 11)
 
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps")
 
 # ----- DEFINE EXECUTABLE ----- #
-add_executable(ITD102_GB_Emulator ${SRC_DIR}/main.c)
+add_executable(ITD102_GB_Emulator "${SRC_DIR}/main.c"
+        src/lib/emu.c
+        src/include/emu.h
+        src/lib/common.c
+        src/include/common.h
+        src/lib/bus.c
+        src/include/bus.h
+        src/lib/cart.c
+        src/include/cart.h
+        src/lib/cpu.c
+        src/include/cpu.h
+        src/lib/ppu.c
+        src/include/ppu.h
+        src/lib/timer.c
+        src/include/timer.h
+)
 
 # ----- IMPORT GLFW ----- #
 set(GLFW_DIR "${LIB_DIR}/glfw")

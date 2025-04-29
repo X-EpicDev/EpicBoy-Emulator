@@ -4,34 +4,23 @@ project(ITD102_GB_Emulator C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps")
 
 # ----- DEFINE EXECUTABLE ----- #
-add_executable(ITD102_GB_Emulator "${SRC_DIR}/main.c"
-        src/lib/emu.c
-        src/include/emu.h
-        src/include/common.h
-        src/lib/bus.c
-        src/include/bus.h
-        src/lib/cart.c
-        src/include/cart.h
-        src/lib/cpu.c
-        src/include/cpu.h
-        src/lib/ppu.c
-        src/include/ppu.h
-        src/lib/timer.c
-        src/include/timer.h
+add_executable(ITD102_GB_Emulator
+        #src files
+        "src/lib/emu.c" "src/lib/bus.c" "src/lib/cart.c" "src/lib/cpu.c" "src/lib/ppu.c" "src/lib/timer.c" "src/main.c"
+        #header files
+        "src/inc/emu.h" "src/inc/bus.h" "src/inc/cart.h" "src/inc/cpu.h" "src/inc/ppu.h" "src/inc/timer.h" "src/inc/common.h"
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #
-set(SDL3_DIR "${LIB_DIR}/SDL3")
+set(SDL3_DIR "deps/SDL3")
 add_subdirectory(${SDL3_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE "${SDL3_DIR}/include")
 target_link_libraries(${PROJECT_NAME} SDL3::SDL3)
 
 # ----- ADD SDL3 TFF TO PROJECT ----- #
-set(SDL3_TFF_DIR "${LIB_DIR}/SDL3TFF")
+set(SDL3_TFF_DIR "deps/SDL3TFF")
 add_subdirectory(${SDL3_TFF_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE "${SDL3_TFF_DIR}/include")
 target_link_libraries(${PROJECT_NAME} SDL3_ttf::SDL3_ttf)

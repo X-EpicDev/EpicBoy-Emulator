@@ -1,4 +1,4 @@
-#include "../include/ppu.h"
+#include "../inc/ppu.h"
 
 void ppuInit() {
 

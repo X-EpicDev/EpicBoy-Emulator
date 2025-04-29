@@ -1,4 +1,4 @@
-#include "../include/cpu.h"
+#include "../inc/cpu.h"
 
 void cpuInit() {
 

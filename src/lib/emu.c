@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "../include/emu.h"
-#include "../include/cart.h"
-#include "../include/cpu.h"
+#include "../inc/emu.h"
+#include "../inc/cart.h"
+#include "../inc/cpu.h"
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 

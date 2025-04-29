@@ -21,4 +21,6 @@ typedef struct {
 
 } rom_header;
 
+bool cartLoad(char *cart);
+
 #endif //CART_H

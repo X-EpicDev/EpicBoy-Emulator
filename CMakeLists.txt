@@ -1,5 +1,5 @@
 # ----- SETUP ----- #
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.20)
 project(ITD102_GB_Emulator C)
 
 set(CMAKE_C_STANDARD 11)
@@ -24,25 +24,14 @@ add_executable(ITD102_GB_Emulator "${SRC_DIR}/main.c"
         src/include/timer.h
 )
 
-# ----- IMPORT GLFW ----- #
-set(GLFW_DIR "${LIB_DIR}/glfw")
-add_subdirectory("${GLFW_DIR}")
-target_include_directories(${PROJECT_NAME} PRIVATE "${GLFW_DIR}/include/GLFW")
-target_link_libraries(${PROJECT_NAME} "glfw" "${GLFW_LIBRARIES}")
+# ----- ADD SDL3 TO PROJECT ----- #
+set(SDL3_DIR "${LIB_DIR}/SDL3")
+add_subdirectory(${SDL3_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE "${SDL3_DIR}/include")
+target_link_libraries(${PROJECT_NAME} SDL3::SDL3)
 
-# ----- IMPORT GLAD ----- #
-set(GLAD_DIR "${LIB_DIR}/glad")
-add_library("glad" "${GLAD_DIR}/src/glad.c")
-target_include_directories("glad" PRIVATE "${GLAD_DIR}/include")
-target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
-target_link_libraries(${PROJECT_NAME} "glad" "${CMAKE_DL_LIBS}")
-
-# ----- Link Libraries ----- #
-target_link_libraries(${PROJECT_NAME}
-        ${GLFW_LIBRARIES}
-        GL      # OpenGL
-        m       # Math
-        dl      # Dynamic loader
-        pthread # Threads
-        X11     # X11 window system
-)
+# ----- ADD SDL3 TFF TO PROJECT ----- #
+set(SDL3_TFF_DIR "${LIB_DIR}/SDL3TFF")
+add_subdirectory(${SDL3_TFF_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE "${SDL3_TFF_DIR}/include")
+target_link_libraries(${PROJECT_NAME} SDL3_ttf::SDL3_ttf)

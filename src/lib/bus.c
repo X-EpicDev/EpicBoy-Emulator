@@ -25,6 +25,7 @@
 
 uint8_t busRead(uint16_t address) {
     if (address < 0x8000) {
+        //ROM DATA
         return cartRead(address);
     }
     //not implemented

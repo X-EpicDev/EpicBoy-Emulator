@@ -14,17 +14,16 @@ static void fetchInstruction() {
     ctx.CurrentInstruction = instructionByOpCode(ctx.currentOPCode);
 }
 
+//fetch current instruction
 static void fetchData() {
     ctx.memoryDestination = 0;
     ctx.destinationIsMemory = false;
 
     if (ctx.CurrentInstruction == NULL) {
-
-        printf("Unknown Instruction %02X\n", ctx.currentOPCode);
-        exit(-7);
         return;
     }
 
+    //address modes switch
     switch(ctx.CurrentInstruction->mode) {
         //Implied
         case IMPL:
@@ -34,6 +33,7 @@ static void fetchData() {
         case REG:
             ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg1);
             return;
+
 
         case REG_D8:
             ctx.fetchData = busRead(ctx.regs.PC);
@@ -51,20 +51,17 @@ static void fetchData() {
 
             ctx.fetchData = lo | (hi << 8);
             ctx.regs.PC += 2;
+
             return;
         }
 
         default:
-            printf("Unknown Addressing Mode %d", ctx.CurrentInstruction->mode);
+            printf("Unknown Addressing Mode %d (%02X)\n", ctx.CurrentInstruction->mode, ctx.currentOPCode);
             exit(-7);
-            return;
-
     }
 }
 
 static void execute() {
-    printf("Executing instruction %02X  PC: %04X\n", ctx.currentOPCode,ctx.regs.PC);
-
     InstructionProcess process = instructionGetProcessor(ctx.CurrentInstruction->type);
 
     if (!process) {
@@ -77,8 +74,20 @@ static void execute() {
 bool cpuStep() {
 
     if (!ctx.halted) {
+        uint16_t pc = ctx.regs.PC;
+
         fetchInstruction();
         fetchData();
+
+        printf("%04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X\n",
+            pc, instructionName(ctx.CurrentInstruction->type), ctx.currentOPCode,
+            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C);
+
+        if (ctx.CurrentInstruction == NULL) {
+            printf("Unknown Instruction %02X\n", ctx.currentOPCode);
+            exit(-7);
+        }
+
         execute();
     }
 

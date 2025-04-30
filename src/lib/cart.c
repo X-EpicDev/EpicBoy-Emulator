@@ -197,10 +197,6 @@ static const char *LicCode[0x100] = {
 	[0xF0] = "A WAVE",
 	[0xF3] = "EXTREME ENTERTAINMENT",
 	[0xFF] = "LJN",
-
-
-
-
 };
 
 const char *cartTypeName() {
@@ -231,13 +227,15 @@ bool cartLoad(char *cart) {
     //get rom size and than return to start
     fseek(fp, 0, SEEK_END);
     ctx.romSize = ftell(fp);
-    rewind(fp);
+
+	rewind(fp);
 
     //allocate the rom size into ram
     ctx.romData = malloc(ctx.romSize);
     fread(ctx.romData, ctx.romSize, 1, fp);
     fclose(fp);
 
+	//Set ctx.header to the header data
     ctx.header = (rom_header *)(ctx.romData + 0x100);
     ctx.header->title[15] = 0;
 
@@ -262,11 +260,11 @@ bool cartLoad(char *cart) {
 }
 
 uint8_t cartRead(uint16_t address) {
-	//ROM ONLY RN
+	//ROM ONLY SUPPORTED TYPE AS OF RIGHT NOW
 
 	return ctx.romData[address];
 }
 
 void cartWrite(uint16_t address, uint8_t value) {
-	//ROM ONLY
+	//NOT IMPLEMENTED
 }

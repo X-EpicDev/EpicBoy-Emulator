@@ -1,6 +1,7 @@
 #ifndef INSTRUCTS_H
 #define INSTRUCTS_H
-#include <stdint.h>
+
+#include "common.h"
 
 //Address Modes
 typedef enum {
@@ -119,5 +120,7 @@ typedef struct {
 } instruction;
 
 instruction *instructionByOpCode(uint8_t opcode);
+
+char *instructionName(instructionType type);
 
 #endif //INSTRUCTS_H

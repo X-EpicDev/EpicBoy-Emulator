@@ -25,7 +25,7 @@ static void ProcessNOP(CPUContext *ctx) {
 //CPU INSTRUCTION PROCESSING
 //NONE
 static void ProcessNone(CPUContext *ctx) {
-    printf("INVALID INSTRUCTION");
+    printf("INVALID INSTRUCTION\n");
     exit(-7);
 }
 
@@ -47,4 +47,3 @@ static InstructionProcess processors[] = {
 InstructionProcess instructionGetProcessor(instructionType type) {
     return processors[type];
 }
-

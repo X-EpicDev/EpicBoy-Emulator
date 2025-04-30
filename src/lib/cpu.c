@@ -19,21 +19,29 @@ static void fetchData() {
     ctx.destinationIsMemory = false;
 
     if (ctx.CurrentInstruction == NULL) {
-        printf("Unknown Instruction %02X", ctx.currentOPCode);
+
+        printf("Unknown Instruction %02X\n", ctx.currentOPCode);
+        exit(-7);
         return;
     }
 
     switch(ctx.CurrentInstruction->mode) {
+        //Implied
         case IMPL:
             return;
+
+        //Register
         case REG:
             ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg1);
             return;
+
         case REG_D8:
             ctx.fetchData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
+
+        case REG_D16:
         case D16: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);
@@ -56,6 +64,14 @@ static void fetchData() {
 
 static void execute() {
     printf("Executing instruction %02X  PC: %04X\n", ctx.currentOPCode,ctx.regs.PC);
+
+    InstructionProcess process = instructionGetProcessor(ctx.CurrentInstruction->type);
+
+    if (!process) {
+        //NO IMPL
+    }
+
+    process(&ctx);
 }
 
 bool cpuStep() {
@@ -63,12 +79,6 @@ bool cpuStep() {
     if (!ctx.halted) {
         fetchInstruction();
         fetchData();
-
-        if (ctx.CurrentInstruction == NULL) {
-            printf("Unknown Instruction! %02X\n", ctx.currentOPCode);
-            exit(-7);
-        }
-
         execute();
     }
 

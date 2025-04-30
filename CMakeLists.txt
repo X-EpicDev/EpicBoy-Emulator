@@ -14,6 +14,7 @@ add_executable(ITD102_GB_Emulator
         src/inc/instructs.h
         src/lib/instructions.c
         src/lib/cpuUtil.c
+        src/lib/cpuProc.c
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #

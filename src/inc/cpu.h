@@ -34,13 +34,12 @@ typedef struct {
 void cpuInit();
 bool cpuStep();
 
-typedef void (*IN_PROC)(CPUContext *);
+typedef void (*InstructionProcess)(CPUContext*);
+InstructionProcess instructionGetProcessor(instructionType type);
 
-IN_PROC inst_get_processor(instructionType type);
+#define CPUFLAGZ BIT(ctx->regs.F, 7)
+#define CPUFLAGC BIT(ctx->regs.F, 4)
 
-#define CPU_FLAG_Z BIT(ctx->regs.f, 7)
-#define CPU_FLAG_C BIT(ctx->regs.f, 4)
-
-uint16_t cpu_read_reg(registerType rt);
+uint16_t cpuReadReg(registerType rt);
 
 #endif //CPU_H

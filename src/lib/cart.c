@@ -50,7 +50,7 @@ static const char *RomTypes[] = {
 //will add the remaining license codes soon
 static const char *LicCode[0x100] = {
 	[0x00] = "NONE",
-	[0x01] = "NINTENDO",
+	[0x01] = "NINTENDO RnD",
 	[0x08] = "CAPCOM",
 	[0x09] = "HOT-B",
 	[0x0A] = "JALECO",

@@ -2,10 +2,11 @@
 #include "../inc/cpu.h"
 
 instruction instructions[0x100] = {
-    [0x00] = {NOP, IMPL},
+    [0x00] = {NOP},
     [0x01] = {LD, REG_D16, RegBC},
-
+    [0xAF] = {XOR, REG, RegA},
     [0xC3] = {JP, D16},
+    [0xF3] = {DI}
 };
 
 instruction *instructionByOpCode(uint8_t opcode) {
@@ -41,7 +42,6 @@ char *InstructionLookup[] = {
     "JP",
     "PUSH",
     "RET",
-    "CB",
     "CALL",
     "RETI",
     "LDH",
@@ -49,7 +49,7 @@ char *InstructionLookup[] = {
     "DI",
     "EI",
     "RST",
-    "IN_ERR",
+    "CB",
     "IN_RLC",
     "IN_RRC",
     "IN_RL",

@@ -17,9 +17,20 @@ static bool checkCondition(CPUContext *ctx) {
     return false;
 }
 
-//NOP
-static void ProcessNOP(CPUContext *ctx) {
-    //Does Nothing
+//SET CPU FLAGS
+void cpuSetFlags(CPUContext *ctx, char z, char n, char h, char c) {
+    if (z != -1) {
+        BITSET(ctx->regs.F, 7, z);
+    }
+    if (n != -1) {
+        BITSET(ctx->regs.F, 6, n);
+    }
+    if (h != -1) {
+        BITSET(ctx->regs.F, 5, h);
+    }
+    if (c != -1) {
+        BITSET(ctx->regs.F, 4, c);
+    }
 }
 
 //CPU INSTRUCTION PROCESSING
@@ -27,6 +38,11 @@ static void ProcessNOP(CPUContext *ctx) {
 static void ProcessNone(CPUContext *ctx) {
     printf("INVALID INSTRUCTION\n");
     exit(-7);
+}
+
+//NOP
+static void ProcessNOP(CPUContext *ctx) {
+    //Does Nothing
 }
 
 //JP
@@ -37,11 +53,22 @@ static void ProcessJP(CPUContext *ctx) {
     }
 }
 
+static void ProcessDI(CPUContext *ctx) {
+    ctx->interruptEnabled = false;
+}
+
+static void ProcessXOR(CPUContext *ctx) {
+    ctx->regs.A ^= ctx->fetchData & 0xFF;
+    cpuSetFlags(ctx, ctx->regs.A,0,0,0);
+}
+
 //INSTRUCTIONS LIST
 static InstructionProcess processors[] = {
     [NONE] = ProcessNone,
     [NOP] = ProcessNOP,
     [JP] = ProcessJP,
+    [DI] = ProcessDI,
+    [XOR] = ProcessXOR,
 };
 
 InstructionProcess instructionGetProcessor(instructionType type) {

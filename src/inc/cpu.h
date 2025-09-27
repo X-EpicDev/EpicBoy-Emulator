@@ -4,6 +4,8 @@
 #include "common.h"
 #include "instructs.h"
 
+//static void fetchData();
+
 typedef struct {
     uint8_t A;
     uint8_t B;
@@ -43,5 +45,6 @@ InstructionProcess instructionGetProcessor(instructionType type);
 #define CPUFLAGC BIT(ctx->regs.F, 4)
 
 uint16_t cpuReadReg(registerType rt);
+void cpuSetReg(registerType rt, uint16_t value);
 
 #endif //CPU_H

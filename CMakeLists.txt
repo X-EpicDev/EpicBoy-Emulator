@@ -1,20 +1,16 @@
 # ----- SETUP ----- #
 cmake_minimum_required(VERSION 3.20)
-project(ITD102_GB_Emulator C)
+project(EpicBoyEmulator C)
 
 set(CMAKE_C_STANDARD 11)
 
-
 # ----- DEFINE EXECUTABLE ----- #
-add_executable(ITD102_GB_Emulator
+add_executable(${PROJECT_NAME}
         #src files
-        "src/lib/emu.c" "src/lib/bus.c" "src/lib/cart.c" "src/lib/cpu.c" "src/lib/ppu.c" "src/lib/timer.c" "src/main.c"
-        #header files
+        "src/src/emu.c" "src/src/bus.c" "src/src/cart.c" "src/src/cpu.c" "src/src/ppu.c" "src/src/timer.c" "src/main.c"
+        "src/src/instructions.c" "src/src/cpuUtil.c" "src/src/cpuProc.c" "src/src/cpuFetch.c"
         "src/inc/emu.h" "src/inc/bus.h" "src/inc/cart.h" "src/inc/cpu.h" "src/inc/ppu.h" "src/inc/timer.h" "src/inc/common.h"
-        src/inc/instructs.h
-        src/lib/instructions.c
-        src/lib/cpuUtil.c
-        src/lib/cpuProc.c
+        "src/inc/instructs.h"
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #

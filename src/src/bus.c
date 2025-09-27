@@ -1,4 +1,4 @@
-#include "../inc/bus.h""
+#include "../inc/bus.h"
 #include "../inc/cart.h"
 
 // MEMORY MAP
@@ -16,18 +16,13 @@
 // 0xFF00 - 0xFF7F : IO REGISTERS
 // 0xFF80 - 0xFFFE : ZERO PAGE
 
-// uint8_t busRead(uint16_t address) {
-//     if (address < 0x8000) {
-//         return cartRead(address);
-//     }
-//     NOIMPL
-// }
-
 uint8_t busRead(uint16_t address) {
     if (address < 0x8000) {
         //ROM DATA
         return cartRead(address);
     }
+
+    printf("UNSUPPORTED BUS READ(%04X)\n", address);
     //not implemented
 }
 
@@ -37,5 +32,18 @@ void busWrite(uint16_t address, uint8_t value) {
         cartWrite(address, value);
         return;
     }
+    printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
     //not implemented
+}
+
+uint16_t busRead16(uint16_t address) {
+    uint16_t lo = busRead(address);
+    uint16_t hi = busRead(address + 1);
+
+    return lo | hi << 8;
+}
+
+void busWrite16(uint16_t address, uint16_t value) {
+    busWrite(address + 1, (value >> 8) & 0xFF);
+    busWrite(address, value & 0xFF);
 }

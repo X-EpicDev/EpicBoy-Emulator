@@ -14,52 +14,7 @@ static void fetchInstruction() {
     ctx.CurrentInstruction = instructionByOpCode(ctx.currentOPCode);
 }
 
-//fetch current instruction
-static void fetchData() {
-    ctx.memoryDestination = 0;
-    ctx.destinationIsMemory = false;
-
-    if (ctx.CurrentInstruction == NULL) {
-        return;
-    }
-
-    //address modes switch
-    switch(ctx.CurrentInstruction->mode) {
-        //Implied
-        case IMPL:
-            return;
-
-        //Register
-        case REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg1);
-            return;
-
-
-        case REG_D8:
-            ctx.fetchData = busRead(ctx.regs.PC);
-            emuCycles(1);
-            ctx.regs.PC++;
-            return;
-
-        case REG_D16:
-        case D16: {
-            uint16_t lo = busRead(ctx.regs.PC);
-            emuCycles(1);
-
-            uint16_t hi = busRead(ctx.regs.PC + 1);
-            emuCycles(1);
-
-            ctx.fetchData = lo | (hi << 8);
-            ctx.regs.PC += 2;
-
-            return;
-        }
-
-        default:
-            printf("Unknown Addressing Mode %d (%02X)\n", ctx.CurrentInstruction->mode, ctx.currentOPCode);
-            exit(-7);
-    }
-}
+void fetchData();
 
 static void execute() {
     InstructionProcess process = instructionGetProcessor(ctx.CurrentInstruction->type);

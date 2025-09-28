@@ -182,14 +182,14 @@ instruction instructions[0x100] = {
     //0xA5
     //0xA6
     //0xA7
-    //0xA8
-    //0xA9
-    //0xAA
-    //0xAB
-    //0xAC
-    //0xAD
-    //0xAE
-    [0xAF] = {XOR, REG, RegA},
+    [0xA8] = {XOR, REG_REG, RegA, RegB},
+    [0xA9] = {XOR, REG_REG, RegA, RegC},
+    [0xAA] = {XOR, REG_REG, RegA, RegD},
+    [0xAB] = {XOR, REG_REG, RegA, RegE},
+    [0xAC] = {XOR, REG_REG, RegA, RegH},
+    [0xAD] = {XOR, REG_REG, RegA, RegL},
+    [0xAE] = {XOR, REG_MEMREG, RegA, RegHL},
+    [0xAF] = {XOR, REG_REG, RegA, RegA},
 
     //0xB0
     //0xB1
@@ -242,9 +242,9 @@ instruction instructions[0x100] = {
     //0xDE
     //0xDF
 
-    //0xE0
+    [0xE0] = {LDH, A8_REG, NONE, RegA},
     //0xE1
-    [0xE2] = {LD, MEMREG_REG, RegC, RegA},
+    [0xE2] = {LDH, MEMREG_REG, RegC, RegA},
 
     //0xE5
     //0xE6
@@ -252,12 +252,12 @@ instruction instructions[0x100] = {
     //0xE8
     //0xE9
     [0xEA] = {LD, A16_REG, NONE, RegA},
-    //0xEE
+    [0xEE] = {XOR, REG_D8, RegA},
     //0xEF
 
-    //0xF0
+    [0xF0] = {LDH, REG_A8, RegA, NONE},
     //0xF1
-    [0xF2] = {LD, REG_MEMREG, RegA, RegC},
+    [0xF2] = {LDH, REG_MEMREG, RegA, RegC},
     [0xF3] = {DI},
     //0xF5
     //0xF6

@@ -33,6 +33,7 @@ typedef struct {
     bool stepping;
 
     bool interruptEnabled;
+    uint8_t interruptRegister;
 } CPUContext;
 
 void cpuInit();
@@ -46,5 +47,8 @@ InstructionProcess instructionGetProcessor(instructionType type);
 
 uint16_t cpuReadReg(registerType rt);
 void cpuSetReg(registerType rt, uint16_t value);
+
+uint16_t cpuGetInterruptReg();
+void cpuSetInterruptRegister(uint8_t n);
 
 #endif //CPU_H

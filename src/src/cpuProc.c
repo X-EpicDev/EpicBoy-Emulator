@@ -76,6 +76,16 @@ static void ProcessLD(CPUContext *ctx) {
     cpuSetReg(ctx->CurrentInstruction->reg1, ctx->fetchData);
 }
 
+static void ProcessLDH(CPUContext *ctx) {
+    if (ctx->CurrentInstruction->reg1 == RegA) {
+        cpuSetReg(ctx->CurrentInstruction->reg1, busRead(0xFF00 | ctx->fetchData));
+    } else {
+        busWrite(0xFF00 | ctx->fetchData, ctx->regs.A);
+    }
+
+    emuCycles(1);
+}
+
 //JP
 static void ProcessJP(CPUContext *ctx) {
     if (checkCondition(ctx)) {
@@ -93,6 +103,8 @@ static void ProcessXOR(CPUContext *ctx) {
 static InstructionProcess processors[] = {
     [NONE] = ProcessNone,
     [NOP] = ProcessNOP,
+    [LD] = ProcessLD,
+    [LDH] = ProcessLDH,
     [JP] = ProcessJP,
     [DI] = ProcessDI,
     [XOR] = ProcessXOR,

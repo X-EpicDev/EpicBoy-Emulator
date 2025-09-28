@@ -1,5 +1,7 @@
 #include "../inc/bus.h"
 #include "../inc/cart.h"
+#include "../inc/ram.h"
+#include "../inc/cpu.h"
 
 // MEMORY MAP
 // 0x0000 - 0x3FFF : ROM BANK 0
@@ -20,20 +22,74 @@ uint8_t busRead(uint16_t address) {
     if (address < 0x8000) {
         //ROM DATA
         return cartRead(address);
+    } else if (address < 0xA000) {
+        //CHARACTER/MAP DATA
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+    } else if (address < 0xC000) {
+        //CART RAM
+        return cartRead(address);
+    } else if (address < 0xE000) {
+        //WORKING RAM
+        return wramRead(address);
+    } else if (address < 0xFE00) {
+        //SYSTEM RESERVED
+        return 0;
+    } else if (address < 0xFEA0) {
+        //OAM
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+    } else if (address < 0xFF00) {
+        //SYSTEM RESERVED
+        return 0;
+    } else if (address < 0xFF80) {
+        //IO REGISTERS
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+    } else if (address == 0xFFFF) {
+        //CPU ENABLE REGISTER
+        //NO IMPLEMENTATION
+        return cpuGetInterruptReg();
     }
 
-    printf("UNSUPPORTED BUS READ(%04X)\n", address);
-    //not implemented
+    //NO IMPLEMENTATION
+    return hramRead(address);
 }
 
 void busWrite(uint16_t address, uint8_t value) {
     if (address < 0x8000) {
-        //ROM DATA
+        //ROM Data
         cartWrite(address, value);
-        return;
+    } else if (address < 0xA000) {
+        //Char/Map Data
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
+
+    } else if (address < 0xC000) {
+        //EXT-RAM
+        cartWrite(address, value);
+    } else if (address < 0xE000) {
+        //WRAM
+        wramWrite(address, value);
+    } else if (address < 0xFE00) {
+        //reserved echo ram
+    } else if (address < 0xFEA0) {
+        //OAM
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED bus_write(%04X)\n", address);
+
+    } else if (address < 0xFF00) {
+        //unusable reserved
+    } else if (address < 0xFF80) {
+        //IO Registers...
+        //NO IMPLEMENTATION
+        printf("UNSUPPORTED bus_write(%04X)\n", address);
+    } else if (address == 0xFFFF) {
+        //CPU SET ENABLE REGISTER
+        cpuSetInterruptRegister(value);
+    } else {
+        hramWrite(address, value);
     }
-    printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
-    //not implemented
 }
 
 uint16_t busRead16(uint16_t address) {

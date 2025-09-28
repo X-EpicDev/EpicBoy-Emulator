@@ -34,9 +34,9 @@ bool cpuStep() {
         fetchInstruction();
         fetchData();
 
-        printf("%04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X\n",
+        printf("%04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X D: %02X E: %02X F: %02X H: %02X L: %02X\n",
             pc, instructionName(ctx.CurrentInstruction->type), ctx.currentOPCode,
-            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C);
+            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.F, ctx.regs.H, ctx.regs.L);
 
         if (ctx.CurrentInstruction == NULL) {
             printf("Unknown Instruction %02X\n", ctx.currentOPCode);
@@ -47,4 +47,11 @@ bool cpuStep() {
     }
 
     return true;
+}
+
+uint16_t cpuGetInterruptReg() {
+    return ctx.interruptRegister;
+}
+void cpuSetInterruptRegister(uint8_t n) {
+    ctx.interruptRegister = n;
 }

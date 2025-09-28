@@ -6,11 +6,11 @@
 //Address Modes
 typedef enum {
     IMPL,       //Implied Address Mode (Does Nothing)
-    REG_D16,    //Loads 16Bit Immediate Value Into Register
+    REG_N16,    //Loads 16Bit Immediate Value Into Register
     REG_REG,    //Loads Data From 1 Register Into Another
     MEMREG_REG, //Loads Data From A Register Into Memory
     REG,        //Used In Single Register Operations
-    REG_D8,     //Loads 8Bit Immediate Value Into Register
+    REG_N8,     //Loads 8Bit Immediate Value Into Register
     REG_MEMREG, //Loads Data From Memory Into A Register
     REG_HLI,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Increments After
     REG_HLD,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Decrements After
@@ -19,13 +19,15 @@ typedef enum {
     REG_A8,     //Loads An Immediate Memory Address Into A Register
     A8_REG,     //Loads A Register into an Immediate Memory Address
     HL_SPR,     //Uses HL As a Pointer To Sprite Memory
-    D16,        //16Bit Immediate Value
-    D8,         //8Bit Immediate Value
-    D16_REG,    //Loads A Register Into A 16Bit Memory Address
-    MEMREG_D8,  //Loads An Immediate Memory Address With 8Bit Data From A Register
+    N16,        //16Bit Immediate Value
+    N8,         //8Bit Immediate Value
+    N16_REG,    //Loads A Register Into A 16Bit Memory Address
+    MEMREG_N8,  //Loads An Immediate Memory Address With 8Bit Data From A Register
     MEMREG,     //Memory Address
     A16_REG,    //Loads A Memory Address With An Immediate Memory Address
-    REG_A16     //Loads Register With 16Bit Immediate Memory Address
+    REG_A16,     //Loads Register With 16Bit Immediate Memory Address
+    A16,
+    E8
 } addressMode;
 
 //Register Types

@@ -34,9 +34,9 @@ bool cpuStep() {
         fetchInstruction();
         fetchData();
 
-        printf("%04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X D: %02X E: %02X F: %02X H: %02X L: %02X\n",
+        printf("PC: %04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X D: %02X E: %02X F: %02X H: %02X L: %02X SP: %02X\n",
             pc, instructionName(ctx.CurrentInstruction->type), ctx.currentOPCode,
-            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.F, ctx.regs.H, ctx.regs.L);
+            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.F, ctx.regs.H, ctx.regs.L, ctx.regs.SP);
 
         if (ctx.CurrentInstruction == NULL) {
             printf("Unknown Instruction %02X\n", ctx.currentOPCode);

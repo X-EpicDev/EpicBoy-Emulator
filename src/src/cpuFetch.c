@@ -25,15 +25,32 @@ void fetchData() {
 
         case REG_REG:
             ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+            return;
 
-        case REG_D8:
+        case REG_N8:
             ctx.fetchData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
 
-        case REG_D16:
-        case D16: {
+        case REG_N16: {
+            uint16_t lo = busRead(ctx.regs.PC);
+            emuCycles(1);
+
+            uint16_t hi = busRead(ctx.regs.PC + 1);
+            emuCycles(1);
+
+            uint16_t value = lo | (hi << 8);
+            ctx.regs.PC += 2;
+
+            // Write directly into the target register pair
+            cpuSetReg(ctx.CurrentInstruction->reg1, value);
+
+            return;
+        }
+
+        case A16:
+        case N16: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);
 
@@ -42,6 +59,16 @@ void fetchData() {
 
             ctx.fetchData = lo | (hi << 8);
             ctx.regs.PC += 2;
+
+            return;
+        }
+
+        case E8: {
+            uint8_t raw = busRead(ctx.regs.PC);
+            emuCycles(1);
+
+            ctx.fetchData = (int8_t)raw;
+            ctx.regs.PC++;
 
             return;
         }
@@ -110,14 +137,13 @@ void fetchData() {
             ctx.regs.PC++;
             return;
 
-        case D8:
+        case N8:
             ctx.fetchData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
 
-        case A16_REG:
-        case D16_REG: {
+        case A16_REG: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);
 
@@ -128,10 +154,24 @@ void fetchData() {
             ctx.destinationIsMemory = true;
 
             ctx.regs.PC += 2;
+
             ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+        }
+        case N16_REG: {
+            uint16_t lo = busRead(ctx.regs.PC);
+            emuCycles(1);
+
+            uint16_t hi = busRead(ctx.regs.PC + 1);
+            emuCycles(1);
+
+            uint16_t value = lo | (hi << 8);
+
+            ctx.regs.PC += 2;
+
+            cpuSetReg(ctx.CurrentInstruction->reg1, value);
         } return;
 
-        case MEMREG_D8:
+        case MEMREG_N8:
             ctx.fetchData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;

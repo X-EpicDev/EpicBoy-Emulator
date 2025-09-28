@@ -8,9 +8,10 @@ set(CMAKE_C_STANDARD 11)
 add_executable(${PROJECT_NAME}
         #src files
         "src/src/emu.c" "src/src/bus.c" "src/src/cart.c" "src/src/cpu.c" "src/src/ppu.c" "src/src/timer.c" "src/main.c"
-        "src/src/instructions.c" "src/src/cpuUtil.c" "src/src/cpuProc.c" "src/src/cpuFetch.c" "src/src/ram.c"
+        "src/src/instructions.c" "src/src/cpuUtil.c" "src/src/cpuProc.c" "src/src/cpuFetch.c" "src/src/ram.c" "src/src/stack.c"
+
         "src/inc/emu.h" "src/inc/bus.h" "src/inc/cart.h" "src/inc/cpu.h" "src/inc/ppu.h" "src/inc/timer.h" "src/inc/common.h"
-        "src/inc/instructs.h" "src/inc/ram.h"
+        "src/inc/instructs.h" "src/inc/ram.h" "src/inc/stack.h"
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #

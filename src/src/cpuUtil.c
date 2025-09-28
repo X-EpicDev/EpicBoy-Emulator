@@ -49,3 +49,7 @@ void cpuSetReg(registerType rt, uint16_t value) {
         case NONE: return;
     }
 }
+
+Registers *cpuGetRegisters() {
+    return &ctx.regs;
+}

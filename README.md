@@ -5,7 +5,7 @@ as a way for me to learn Emulator Development
 ## Progress
 - [x] Cartridge Reading
 - [x] Load ROM into RAM
-- [ ] Unprefixed CPU Instructions (107/245)
+- [ ] Unprefixed CPU Instructions (145/245)
 - [ ] Prefixed CPU Instructions (0/256)
 - [ ] System Interrupts
 - [ ] Picture Processing Unit
@@ -17,7 +17,7 @@ Cart Read/Write
 ![](https://geps.dev/progress/87)
 
 Full CPU Instructs
-![](https://geps.dev/progress/21)
+![](https://geps.dev/progress/28)
 
 Picture Processing Unit
 ![](https://geps.dev/progress/0)

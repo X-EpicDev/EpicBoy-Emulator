@@ -36,6 +36,8 @@ typedef struct {
     uint8_t interruptRegister;
 } CPUContext;
 
+Registers *cpuGetRegisters();
+
 void cpuInit();
 bool cpuStep();
 

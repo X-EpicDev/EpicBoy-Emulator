@@ -13,7 +13,9 @@ void stackPush16(uint16_t data) {
 }
 
 uint8_t stackPop() {
-    return busRead(cpuGetRegisters()->SP++);
+    uint8_t value = busRead(cpuGetRegisters()->SP);
+    cpuGetRegisters()->SP++;
+    return value;
 }
 
 uint16_t stackPop16() {

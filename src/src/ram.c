@@ -8,10 +8,10 @@ typedef struct {
 static ramContext ram;
 
 uint8_t wramRead(uint16_t address) {
-    address -= 0x8000;
+    address -= 0xC000;
 
     if (address >= 0x2000) {
-        printf("INVALID WRAM ADDRESS: %04X\n", address + 0xC000);
+        printf("INVALID WRAM ADDRESS: %08X\n", address + 0xC000);
         exit(-1);
     }
 

@@ -11,7 +11,7 @@ typedef struct {
 
 int emuRun(int argc, char *argv[]);
 
-emuContext *emu_get_context();
+emuContext *emuGetContext();
 
 void emuCycles(int cpuCycles);
 

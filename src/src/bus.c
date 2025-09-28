@@ -33,8 +33,8 @@ uint8_t busRead(uint16_t address) {
         //WORKING RAM
         return wramRead(address);
     } else if (address < 0xFE00) {
-        //SYSTEM RESERVED
-        return 0;
+        //ECHO RAM (Copies 0xC000-0xDDFF)
+        return wramRead(address - 0x2000);
     } else if (address < 0xFEA0) {
         //OAM
         //NO IMPLEMENTATION
@@ -47,11 +47,10 @@ uint8_t busRead(uint16_t address) {
         //NO IMPLEMENTATION
         printf("UNSUPPORTED BUS READ(%04X)\n", address);
     } else if (address == 0xFFFF) {
-        //CPU ENABLE REGISTER
+        //INTERRUPT ENABLE REGISTER
         //NO IMPLEMENTATION
         return cpuGetInterruptReg();
     }
-
     //NO IMPLEMENTATION
     return hramRead(address);
 }
@@ -64,28 +63,27 @@ void busWrite(uint16_t address, uint8_t value) {
         //Char/Map Data
         //NO IMPLEMENTATION
         printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
-
     } else if (address < 0xC000) {
-        //EXT-RAM
+        //CART-RAM
         cartWrite(address, value);
     } else if (address < 0xE000) {
         //WRAM
         wramWrite(address, value);
     } else if (address < 0xFE00) {
-        //reserved echo ram
+        //ECHO RAM (mirror of 0xC000-0xDDFF)
+        wramWrite(address - 0x2000, value);
     } else if (address < 0xFEA0) {
         //OAM
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED bus_write(%04X)\n", address);
-
+        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
     } else if (address < 0xFF00) {
-        //unusable reserved
+        //SYSTEM RESERVED
     } else if (address < 0xFF80) {
-        //IO Registers...
+        //IO Registers
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED bus_write(%04X)\n", address);
+        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
     } else if (address == 0xFFFF) {
-        //CPU SET ENABLE REGISTER
+        // INTERRUPT ENABLE REGISTER
         cpuSetInterruptRegister(value);
     } else {
         hramWrite(address, value);
@@ -95,11 +93,10 @@ void busWrite(uint16_t address, uint8_t value) {
 uint16_t busRead16(uint16_t address) {
     uint16_t lo = busRead(address);
     uint16_t hi = busRead(address + 1);
-
     return lo | hi << 8;
 }
 
 void busWrite16(uint16_t address, uint16_t value) {
-    busWrite(address + 1, (value >> 8) & 0xFF);
     busWrite(address, value & 0xFF);
+    busWrite(address + 1, (value >> 8) & 0xFF);
 }

@@ -1,30 +1,46 @@
+<pre>
 # The EpicBoy Emulator
-The EpicBoy Emulator is a general GameBoy emulator written in Pure C code, and was created 
+The EpicBoy Emulator is a general GameBoy emulator written in Pure C, and was created 
 as a way for me to learn Emulator Development
 
-## Progress
-- [x] Cartridge Reading
-- [x] Load ROM into RAM
-- [ ] Unprefixed CPU Instructions (145/245)
-- [ ] Prefixed CPU Instructions (0/256)
-- [ ] System Interrupts
-- [ ] Picture Processing Unit
-- [ ] Memory Bank Controllers
-- [ ] Audio Processing Unit
+# Progress
 
-## Progress Bars
-Cart Read/Write
-![](https://geps.dev/progress/87)
+CPU
+[========  ] 88.2% Unprefixed CPU OP-Codes
+[          ] 0%    Prefixed CPU OP-Codes
 
-Full CPU Instructs
-![](https://geps.dev/progress/28)
+Memory/Bus
+[==========] 100% Cartridge Read (ROM ONLY)
+[==========] 100% Echo RAM (0xE000-0xFDFF)
+[==========] 100% WRAM/HRAM Access
+[=====     ] 50%  Interrupt Register (IE/IF)
+[          ] 0%   Cartridge Write
+[          ] 0%   IO Registers (0xFF00-0xFF7F)
+[          ] 0%   MBC1/MBC2/MBC3/MBC5 Support
 
-Picture Processing Unit
-![](https://geps.dev/progress/0)
+PPU/GPU
+[          ] 0.00% Tile Data (0x8000-0x97FF)
+[          ] 0.00% BG Map 1 (0x9800-0x98FF)
+[          ] 0.00% BG Map 2 (0x9C00-0x9FFF)
+[          ] 0.00% Sprite Attribute Memory/OAM (0xFE00-0xFE9F)
+[          ] 0.00% Palette/Colours
+[          ] 0.00% LCD Control/Status
+[          ] 0.00% VRAM Access
 
+Timers / Sound / Input
+[          ] 0.00% Timer Registers (DIV, TIMA, TMA, TAC)
+[          ] 0.00% Serial / Link Cable Support
+[          ] 0.00% Joypad Input
+[          ] 0.00% Sound Registers
 
-### Credits
+Other Core / Future
+[          ] 0.00% DMA Transfer
+[          ] 0.00% Gameboy Boot ROM
+[          ] 0.00% Halt / Stop CPU states
+[          ] 0.00% Double-speed mode / GBC support
+[          ] 0.00% RTC (MBC3 timer)
+
+# Credits
 
 - X_EpicDev (Everything)
-
-
+</pre>

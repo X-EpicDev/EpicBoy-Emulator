@@ -7,7 +7,7 @@
 
 static emuContext ctx;
 
-emuContext *emu_get_context() {
+emuContext *emuGetContext() {
     return &ctx;
 }
 

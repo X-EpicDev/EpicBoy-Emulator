@@ -27,7 +27,8 @@ typedef enum {
     A16_REG,    //Loads A Memory Address With An Immediate Memory Address
     REG_A16,     //Loads Register With 16Bit Immediate Memory Address
     A16,
-    E8
+    E8,
+    REG_E8
 } addressMode;
 
 //Register Types

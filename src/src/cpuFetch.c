@@ -33,6 +33,15 @@ void fetchData() {
             ctx.regs.PC++;
             return;
 
+        case REG_E8: {
+            uint8_t raw = busRead(ctx.regs.PC);
+            emuCycles(1);
+
+            ctx.fetchData = (int8_t)raw;
+
+            ctx.regs.PC++;
+        }
+
         case REG_N16: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);

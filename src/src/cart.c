@@ -266,6 +266,6 @@ uint8_t cartRead(uint16_t address) {
 }
 
 void cartWrite(uint16_t address, uint8_t value) {
-	printf("Cart Write(%04X)\n", address);
+	printf("Cart Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
 	//NOT IMPLEMENTED
 }

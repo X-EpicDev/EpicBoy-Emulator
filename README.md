@@ -6,8 +6,8 @@ as a way for me to learn Emulator Development
 # Progress
 
 CPU
-[========  ] 88.2% Unprefixed CPU OP-Codes
-[          ] 0%    Prefixed CPU OP-Codes
+[==========] 100% Unprefixed CPU OP-Codes
+[==========] 100% Prefixed CPU OP-Codes
 
 Memory/Bus
 [==========] 100% Cartridge Read (ROM ONLY)

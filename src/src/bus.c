@@ -25,7 +25,7 @@ uint8_t busRead(uint16_t address) {
     } else if (address < 0xA000) {
         //CHARACTER/MAP DATA
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
     } else if (address < 0xC000) {
         //CART RAM
         return cartRead(address);
@@ -38,14 +38,16 @@ uint8_t busRead(uint16_t address) {
     } else if (address < 0xFEA0) {
         //OAM
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
+        return 0x0;
     } else if (address < 0xFF00) {
         //SYSTEM RESERVED
         return 0;
     } else if (address < 0xFF80) {
         //IO REGISTERS
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS READ(%04X)\n", address);
+        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
+        return 0x0;
     } else if (address == 0xFFFF) {
         //INTERRUPT ENABLE REGISTER
         //NO IMPLEMENTATION
@@ -58,11 +60,12 @@ uint8_t busRead(uint16_t address) {
 void busWrite(uint16_t address, uint8_t value) {
     if (address < 0x8000) {
         //ROM Data
+        printf("Bus Write to ROM region at 0x%04X (SP=%04X)\n", address, cpuGetRegisters()->SP);
         cartWrite(address, value);
     } else if (address < 0xA000) {
         //Char/Map Data
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
+        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
     } else if (address < 0xC000) {
         //CART-RAM
         cartWrite(address, value);
@@ -75,13 +78,13 @@ void busWrite(uint16_t address, uint8_t value) {
     } else if (address < 0xFEA0) {
         //OAM
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
+        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
     } else if (address < 0xFF00) {
         //SYSTEM RESERVED
     } else if (address < 0xFF80) {
         //IO Registers
         //NO IMPLEMENTATION
-        printf("UNSUPPORTED BUS WRITE(%04X)\n", address);
+        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
     } else if (address == 0xFFFF) {
         // INTERRUPT ENABLE REGISTER
         cpuSetInterruptRegister(value);

@@ -6,6 +6,7 @@
 typedef struct {
     bool paused;
     bool running;
+    bool die;
     uint64_t ticks;
 } emuContext;
 

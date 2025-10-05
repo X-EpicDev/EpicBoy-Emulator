@@ -40,6 +40,7 @@ void fetchData() {
             ctx.fetchData = (int8_t)raw;
 
             ctx.regs.PC++;
+            return;
         }
 
         case REG_N16: {
@@ -103,13 +104,13 @@ void fetchData() {
         } return;
 
         case REG_HLI:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+            ctx.fetchData = busRead(cpuReadReg(RegHL));
             emuCycles(1);
             cpuSetReg(RegHL, cpuReadReg(RegHL) + 1);
             return;
 
         case REG_HLD:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+            ctx.fetchData = busRead(cpuReadReg(RegHL));
             emuCycles(1);
             cpuSetReg(RegHL, cpuReadReg(RegHL) - 1);
             return;
@@ -126,6 +127,7 @@ void fetchData() {
             ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
             ctx.destinationIsMemory = true;
             cpuSetReg(RegHL, cpuReadReg(RegHL) - 1);
+            return;
 
         case REG_A8:
             ctx.fetchData = busRead(ctx.regs.PC);
@@ -140,11 +142,15 @@ void fetchData() {
             ctx.regs.PC++;
             return;
 
-        case HL_SPR:
-            ctx.fetchData = busRead(ctx.regs.PC);
+        case HL_SPR: {
+            uint8_t raw = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
+
+            // Store as signed offset for executor
+            ctx.fetchData = (int8_t)raw;
             return;
+        }
 
         case N8:
             ctx.fetchData = busRead(ctx.regs.PC);
@@ -165,6 +171,7 @@ void fetchData() {
             ctx.regs.PC += 2;
 
             ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+            return;
         }
         case N16_REG: {
             uint16_t lo = busRead(ctx.regs.PC);
@@ -191,7 +198,6 @@ void fetchData() {
         case MEMREG:
             ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
             ctx.destinationIsMemory = true;
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg1);
             emuCycles(1);
             return;
 

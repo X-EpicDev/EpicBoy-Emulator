@@ -65,15 +65,15 @@ static void ProcessNOP(CPUContext *ctx) {
 
 static void ProcessLD(CPUContext *ctx) {
     if (ctx->destinationIsMemory) {
-
-        if (ctx->CurrentInstruction->reg2 >= RegAF) {
+        // Only LD (a16), SP (opcode 0x08) should write 16 bits
+        if (ctx->CurrentInstruction->mode == A16_REG && ctx->CurrentInstruction->reg2 == RegSP) {
             busWrite16(ctx->memoryDestination, ctx->fetchData);
         } else {
-            busWrite(ctx->memoryDestination, ctx->fetchData);
+            busWrite(ctx->memoryDestination, ctx->fetchData & 0xFF);
         }
-
         return;
     }
+
 
     if (ctx->CurrentInstruction->mode == HL_SPR) {
         uint8_t hflag = (cpuReadReg(ctx->CurrentInstruction->reg2) & 0xF) + (ctx->fetchData & 0xF) >= 0x10;
@@ -111,7 +111,7 @@ static void ProcessJR(CPUContext *ctx) {
 
 static void ProcessCALL(CPUContext *ctx) {
     if (checkCondition(ctx)) {
-        uint16_t returnAddress = ctx->regs.PC + 3;
+        uint16_t returnAddress = ctx->regs.PC;
         stackPush16(returnAddress);
         emuCycles(2);
 
@@ -144,6 +144,10 @@ static void ProcessRETI(CPUContext *ctx) {
 
 static void ProcessDI(CPUContext *ctx) {
     ctx->interruptEnabled = false;
+}
+
+static void ProcessEI(CPUContext *ctx) {
+    ctx->enableIME = true;
 }
 
 static void ProcessXOR(CPUContext *ctx) {
@@ -288,6 +292,229 @@ static void ProcessSBC(CPUContext *ctx) {
     cpuSetFlags(ctx, z, 1, h, c);
 }
 
+static void ProcessOR(CPUContext *ctx) {
+    ctx->regs.A |= ctx->fetchData & 0xFF;
+    cpuSetFlags(ctx, ctx->regs.A == 0,0,0,0);
+}
+
+static void ProcessAND(CPUContext *ctx) {
+    ctx->regs.A &= ctx->fetchData & 0xFF;
+    cpuSetFlags(ctx, ctx->regs.A == 0,0,1,0);
+}
+
+static void ProcessCP(CPUContext *ctx) {
+    int n = (int)ctx->regs.A - (int)ctx->fetchData;
+
+    cpuSetFlags(ctx, n == 0, 1, ((int)ctx->regs.A & 0xFF) - ((int)ctx->fetchData & 0xFF) < 0, n < 0);
+}
+
+registerType regLookup[] = {
+    RegB,
+    RegC,
+    RegD,
+    RegE,
+    RegH,
+    RegL,
+    RegHL,
+    RegA
+};
+
+registerType decodeRegister(uint8_t reg) {
+    if (reg > 0b111) {
+        return RegNone;
+    }
+
+    return regLookup[reg];
+}
+
+static void ProcessCB(CPUContext *ctx) {
+    uint8_t op = ctx->fetchData;
+    registerType reg = decodeRegister(op & 0b111);
+    uint8_t bit = (op >> 3) & 0b111;
+    uint8_t bitOP = (op >> 6) & 0b11;
+    uint8_t registerValue = cpuReadReg8(reg);
+
+    emuCycles(1);
+
+    if (reg == RegHL) {
+        emuCycles(2);
+    }
+
+    switch (bitOP) {
+        case 1:
+            //BIT
+            cpuSetFlags(ctx, !(registerValue & (1 << bit)), 0, 1, -1);
+            return;
+        case 2:
+            //RST
+            registerValue &= ~(1 << bit);
+            cpuSetReg8(reg, registerValue);
+            return;
+        case 3:
+            //SET
+            registerValue |= (1 << bit);
+            cpuSetReg8(reg, registerValue);
+            return;
+    }
+
+    bool flagC = CPUFLAGC;
+
+    switch (bit) {
+        case 0: {
+            //RLC
+            bool setC = false;
+            uint8_t result = (registerValue << 1) & 0xFF;
+
+            if ((registerValue & (1 << 7)) != 0) {
+                result |= 1;
+                setC = true;
+            }
+
+            cpuSetReg8(reg, result);
+            cpuSetFlags(ctx, result == 0, false, false, setC);
+        } return;
+
+        case 1: {
+            //RRC
+            uint8_t old = registerValue;
+            registerValue >>= 1;
+            registerValue |= (old << 7);
+
+            cpuSetReg8(reg, registerValue);
+            cpuSetFlags(ctx, !registerValue, false, false, old & 1);
+        } return;
+
+        case 2: {
+            //RL
+            uint8_t old = registerValue;
+            registerValue <<= 1;
+            registerValue |= flagC;
+
+            cpuSetReg8(reg, registerValue);
+            cpuSetFlags(ctx, !registerValue, false, false, !!(old & 0x80));
+        } return;
+
+        case 3: {
+            //RR
+            uint8_t old = registerValue;
+            registerValue >>= 1;
+
+            registerValue |= (flagC << 7);
+
+            cpuSetReg8(reg, registerValue);
+            cpuSetFlags(ctx, !registerValue, false, false, old & 1);
+        } return;
+
+        case 4: {
+            //SLA
+            uint8_t old = registerValue;
+            registerValue <<= 1;
+
+            cpuSetReg8(reg, registerValue);
+            cpuSetFlags(ctx, !registerValue, false, false, !!(old & 0x80));
+        } return;
+
+        case 5: {
+            //SRA
+            uint8_t u = (int8_t)registerValue >> 1;
+            cpuSetReg8(reg, u);
+            cpuSetFlags(ctx, !u, 0, 0, registerValue & 1);
+        } return;
+
+        case 6: {
+            //SWAP
+            registerValue = ((registerValue & 0xF0) >> 4) | ((registerValue & 0xF) << 4);
+            cpuSetReg8(reg, registerValue);
+            cpuSetFlags(ctx, registerValue == 0, false, false, false);
+        } return;
+
+        case 7: {
+            //SRL
+            uint8_t u = registerValue >> 1;
+            cpuSetReg8(reg, u);
+            cpuSetFlags(ctx, !u, 0, 0, registerValue & 1);
+        } return;
+    }
+
+    fprintf(stderr, "ERROR: INVALID CB: %02X", op);
+    exit(-1);
+}
+
+static void ProcessRLCA(CPUContext *ctx) {
+    uint8_t u = ctx->regs.A;
+    bool c = (u >> 7) & 1;
+    u = (u << 1) | c;
+    ctx->regs.A = u;
+
+    cpuSetFlags(ctx, 0,0,0,c);
+}
+
+static void ProcessRRCA(CPUContext *ctx) {
+    uint8_t b = ctx->regs.A & 1;
+    ctx->regs.A >>= 1;
+    ctx->regs.A |= (b << 7);
+
+    cpuSetFlags(ctx, 0,0,0,b);
+}
+
+static void ProcessRLA(CPUContext *ctx) {
+    uint8_t u = ctx->regs.A;
+    uint8_t cf = CPUFLAGC;
+    uint8_t c = (u >> 7) & 1;
+
+    ctx->regs.A = (u << 1) | cf;
+    cpuSetFlags(ctx, 0, 0, 0, c);
+}
+
+static void ProcessRRA(CPUContext *ctx) {
+    uint8_t carry = CPUFLAGC;
+    uint8_t newC = ctx->regs.A & 1;
+
+    ctx->regs.A >>= 1;
+    ctx->regs.A |= (carry << 7);
+
+    cpuSetFlags(ctx, 0,0,0,newC);
+}
+
+static void ProcessSTOP(CPUContext *ctx) {
+    fprintf(stderr, "STOPPING");
+    exit(-1);
+}
+
+static void ProcessCPL(CPUContext *ctx) {
+    ctx->regs.A = ~ctx->regs.A;
+    cpuSetFlags(ctx, -1, 0, 0, 1);
+}
+
+static void ProcessSCF(CPUContext *ctx) {
+    cpuSetFlags(ctx, -1, 0, 0, 1);
+}
+
+static void ProcessCCF(CPUContext *ctx) {
+    cpuSetFlags(ctx, -1, 0, 0, CPUFLAGC ^ 1);
+}
+
+static void ProcessHALT(CPUContext *ctx) {
+    ctx->halted = true;
+}
+
+static void ProcessDAA(CPUContext *ctx) {
+    uint8_t u = 0;
+    uint32_t cf = 0;
+
+    if (CPUFLAGH || (!CPUFLAGN && (ctx->regs.A & 0xF) > 9)) {
+        u = 6;
+    }
+
+    if (CPUFLAGC || (!CPUFLAGN && ctx->regs.A < 0x99)) {
+        u |= 0x60;
+        cf = 1;
+    }
+
+    ctx->regs.A += CPUFLAGN ? -u : u;
+    cpuSetFlags(ctx, ctx->regs.A == 0, -1, 0, cf);
+}
+
 //INSTRUCTIONS LIST
 static InstructionProcess processors[] = {
     [NONE] = ProcessNone,
@@ -310,6 +537,21 @@ static InstructionProcess processors[] = {
     [SBC] = ProcessSBC,
     [ADC] = ProcessADC,
     [ADD] = ProcessADD,
+    [AND] = ProcessAND,
+    [OR] = ProcessOR,
+    [CP] = ProcessCP,
+    [CB] = ProcessCB,
+    [RRCA] = ProcessRRCA,
+    [RLCA] = ProcessRLCA,
+    [RRA] = ProcessRRA,
+    [RLA] = ProcessRLA,
+    [STOP] = ProcessSTOP,
+    [CPL] = ProcessCPL,
+    [SCF] = ProcessSCF,
+    [CCF] = ProcessCCF,
+    [HALT] = ProcessHALT,
+    [DAA] = ProcessDAA,
+    [EI] = ProcessEI,
 };
 
 InstructionProcess instructionGetProcessor(instructionType type) {

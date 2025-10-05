@@ -8,8 +8,8 @@ void stackPush(uint8_t data) {
 }
 
 void stackPush16(uint16_t data) {
-    stackPush((data >> 8) & 0xFF);
     stackPush(data & 0xFF);
+    stackPush((data >> 8) & 0xFF);
 }
 
 uint8_t stackPop() {

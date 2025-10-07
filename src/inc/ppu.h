@@ -94,4 +94,6 @@ uint8_t ppuOamRead(uint16_t address);
 void ppuVramWrite(uint16_t address, uint8_t value);
 uint8_t ppuVramRead(uint16_t address);
 
+ppuContext *ppuGetContext();
+
 #endif //PPU_H

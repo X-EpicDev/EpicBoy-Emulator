@@ -104,7 +104,7 @@ uint16_t busRead16(uint16_t address) {
     uint16_t lo = busRead(address);
     uint16_t hi = busRead(address + 1);
 
-    return lo | hi << 8;
+    return lo | (hi << 8);
 }
 
 void busWrite16(uint16_t address, uint16_t value) {

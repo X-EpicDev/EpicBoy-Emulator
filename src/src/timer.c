@@ -33,7 +33,7 @@ void timerTick() {
             break;
     }
 
-    if (timerUpdate && ctx.tac & (1<<2)) {
+    if (timerUpdate && ctx.tac & (1 << 2)) {
         ctx.tima++;
 
         if (ctx.tima == 0xFF) {

@@ -218,7 +218,7 @@ const char *cartTypeName() {
 bool cartLoad(char *cart) {
     snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
 
-    FILE *fp = fopen(ctx.filename, "r");
+    FILE *fp = fopen(cart, "r");
 
     if(!fp) {
         printf("failed to open %s\n", cart);
@@ -254,7 +254,7 @@ bool cartLoad(char *cart) {
     //checksum
     uint16_t x = 0;
     for (uint16_t i = 0x0134; i <= 0x014C; i++) {
-        x = x - ctx.romData[i] - i;
+        x = x - ctx.romData[i] - 1;
     }
 
     printf("\t Checksum : %2.2X (%s)\n", ctx.header->checksum, (x & 0xFF) ? "PASSED" : "FAILED");

@@ -48,6 +48,11 @@ bool cpuStep() {
         emuCycles(1);
         fetchData();
 
+        //printf("A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n",
+        //    ctx.regs.A, ctx.regs.F, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.H, ctx.regs.L, ctx.regs.SP, ctx.regs.PC,
+        //    busRead(pc+1), busRead(pc+2), busRead(pc+3), busRead(pc+4));
+
+
         char flags[16];
         sprintf(flags, "%c%c%c%c",
             ctx.regs.F & (1 << 7) ? 'Z' : '-',

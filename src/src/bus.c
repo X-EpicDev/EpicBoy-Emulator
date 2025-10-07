@@ -2,8 +2,8 @@
 #include "../inc/cart.h"
 #include "../inc/ram.h"
 #include "../inc/cpu.h"
+#include "../inc/io.h"
 
-// MEMORY MAP
 // 0x0000 - 0x3FFF : ROM BANK 0
 // 0x4000 - 0x7FFF : ROM BANK 1
 // 0x8000 - 0x97FF ; CHARACTER RAM
@@ -24,8 +24,9 @@ uint8_t busRead(uint16_t address) {
         return cartRead(address);
     } else if (address < 0xA000) {
         //CHARACTER/MAP DATA
-        //NO IMPLEMENTATION
-        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
+        //TODO
+        printf("Unsupported Bus Read attempted at 0x%04X\n", address);
+        NOIMPL
     } else if (address < 0xC000) {
         //CART RAM
         return cartRead(address);
@@ -34,59 +35,65 @@ uint8_t busRead(uint16_t address) {
         return wramRead(address);
     } else if (address < 0xFE00) {
         //ECHO RAM (Copies 0xC000-0xDDFF)
-        return wramRead(address - 0x2000);
+        return 0;
     } else if (address < 0xFEA0) {
         //OAM
-        //NO IMPLEMENTATION
-        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
+        //TODO
+        printf("Unsupported Bus Read attempted at 0x%04X\n", address);
+        //NOIMPL
         return 0x0;
     } else if (address < 0xFF00) {
-        //SYSTEM RESERVED
+        //SYSTEM RESERVED (NOT USABLE)
         return 0;
     } else if (address < 0xFF80) {
         //IO REGISTERS
-        //NO IMPLEMENTATION
-        printf("Bus Read attempted at 0x%04X (NOT IMPLEMENTED)\n", address);
-        return 0x0;
+        //TODO
+
+        //NOIMPL
+        return ioRead(address);
     } else if (address == 0xFFFF) {
         //INTERRUPT ENABLE REGISTER
-        //NO IMPLEMENTATION
+        //TODO
         return cpuGetInterruptReg();
     }
-    //NO IMPLEMENTATION
+
+    //NOIMPL
     return hramRead(address);
 }
 
 void busWrite(uint16_t address, uint8_t value) {
     if (address < 0x8000) {
         //ROM Data
-        printf("Bus Write to ROM region at 0x%04X (SP=%04X)\n", address, cpuGetRegisters()->SP);
         cartWrite(address, value);
     } else if (address < 0xA000) {
         //Char/Map Data
-        //NO IMPLEMENTATION
-        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+        //TODO
+        printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+        //NOIMPL
     } else if (address < 0xC000) {
-        //CART-RAM
+        //EXTERNAL-RAM
         cartWrite(address, value);
     } else if (address < 0xE000) {
         //WRAM
         wramWrite(address, value);
     } else if (address < 0xFE00) {
-        //ECHO RAM (mirror of 0xC000-0xDDFF)
-        wramWrite(address - 0x2000, value);
+        //RESERVED ECHO RAM
     } else if (address < 0xFEA0) {
         //OAM
-        //NO IMPLEMENTATION
-        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+
+        //TODO
+        printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+        //NOIMPL
     } else if (address < 0xFF00) {
-        //SYSTEM RESERVED
+        //SYSTEM RESERVED (NOT USABLE)
     } else if (address < 0xFF80) {
         //IO Registers
-        //NO IMPLEMENTATION
-        printf("Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+        //TODO
+        ioWrite(address, value);
+        //NOIMPL
     } else if (address == 0xFFFF) {
-        // INTERRUPT ENABLE REGISTER
+        // INTERRUPT SET ENABLE REGISTER
+
         cpuSetInterruptRegister(value);
     } else {
         hramWrite(address, value);
@@ -96,10 +103,11 @@ void busWrite(uint16_t address, uint8_t value) {
 uint16_t busRead16(uint16_t address) {
     uint16_t lo = busRead(address);
     uint16_t hi = busRead(address + 1);
+
     return lo | hi << 8;
 }
 
 void busWrite16(uint16_t address, uint16_t value) {
-    busWrite(address, value & 0xFF);
     busWrite(address + 1, (value >> 8) & 0xFF);
+    busWrite(address, value & 0xFF);
 }

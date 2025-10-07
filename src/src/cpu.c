@@ -1,44 +1,43 @@
 #include "../inc/cpu.h"
 #include "../inc/bus.h"
 #include "../inc/emu.h"
-#include "../inc/interrupt.h"
+#include "../inc/interrupts.h"
+#include "../inc/dbg.h"
+#include "../inc/timer.h"
 
 CPUContext ctx = {0};
 
 void cpuInit() {
-    ctx.regs.A = 0x01;
-    ctx.regs.F = 0xB0;
-    ctx.regs.B = 0x00;
-    ctx.regs.C = 0x13;
-    ctx.regs.D = 0x00;
-    ctx.regs.E = 0xD8;
-    ctx.regs.H = 0x01;
-    ctx.regs.L = 0x4D;
+    ctx.regs.PC = 0x100;
     ctx.regs.SP = 0xFFFE;
-    ctx.regs.PC = 0x0100;
-    ctx.interruptRegister = 0;
-    ctx.interruptEnabled = false;
-    ctx.enableIME = false;
+    *((short *)&ctx.regs.A) = 0xB001;
+    *((short *)&ctx.regs.B) = 0x1300;
+    *((short *)&ctx.regs.D) = 0xD800;
+    *((short *)&ctx.regs.H) = 0x4D01;
+    ctx.interruptEnableRegister = 0;
+    ctx.interruptFlags = 0;
+    ctx.interruptMasterEnabled = false;
+    ctx.enablingIME = false;
+
+    timerGetContext()->div = 0xABCC;
 }
 
 static void fetchInstruction() {
     ctx.currentOPCode = busRead(ctx.regs.PC++);
-    ctx.CurrentInstruction = instructionByOpCode(ctx.currentOPCode);
+    ctx.currentInstruction = instructionByOpCode(ctx.currentOPCode);
 }
 
 void fetchData();
 
 static void execute() {
-    InstructionProcess process = instructionGetProcessor(ctx.CurrentInstruction->type);
+    InstructionProcess process = instructionGetProcessor(ctx.currentInstruction->type);
 
     if (!process) {
-        //NO IMPL
+        NOIMPL
     }
 
     process(&ctx);
 }
-
-// uint64_t checker = 0; - Keeping this here for checking if needed
 
 bool cpuStep() {
 
@@ -46,6 +45,7 @@ bool cpuStep() {
         uint16_t pc = ctx.regs.PC;
 
         fetchInstruction();
+        emuCycles(1);
         fetchData();
 
         char flags[16];
@@ -53,26 +53,29 @@ bool cpuStep() {
             ctx.regs.F & (1 << 7) ? 'Z' : '-',
             ctx.regs.F & (1 << 6) ? 'N' : '-',
             ctx.regs.F & (1 << 5) ? 'H' : '-',
-            ctx.regs.F & (1 << 4) ? 'C' : '-');
+            ctx.regs.F & (1 << 4) ? 'C' : '-'
+        );
 
+        char inst[16];
+        instructionToString(&ctx, inst);
 
-        printf("%08lX - PC: %04X: %-7s (%02X %02X %02X) A: %02X B: %02X C: %02X D: %02X E: %02X F: %02X H: %02X L: %02X SP: %04X FLAGS: %s\n",
-            emuGetContext()->ticks, pc, instructionName(ctx.CurrentInstruction->type), ctx.currentOPCode,
-            busRead(pc+1), busRead(pc+2), ctx.regs.A, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.F, ctx.regs.H, ctx.regs.L, ctx.regs.SP, flags);
+        printf("%08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n",
+            emuGetContext()->ticks,
+            pc, inst, ctx.currentOPCode,
+            busRead(pc + 1), busRead(pc + 2), ctx.regs.A, flags, ctx.regs.B, ctx.regs.C,
+            ctx.regs.D, ctx.regs.E, ctx.regs.H, ctx.regs.L);
 
-        // checker++;
-        // if (checker == 0xA0) {
-        //     exit(1);
-        // }
-        // LEGACY ADDRESS STOPPING CODE (DO NOT DELETE INCASE OF EMERGENCY)
-
-        if (ctx.CurrentInstruction == NULL) {
+        if (ctx.currentInstruction == NULL) {
             printf("Unknown Instruction %02X\n", ctx.currentOPCode);
             exit(-7);
         }
 
+        dbgUpdate();
+        dbgPrint();
+
         execute();
     } else {
+        //IF HALTED
         emuCycles(1);
 
         if (ctx.interruptFlags) {
@@ -80,21 +83,26 @@ bool cpuStep() {
         }
     }
 
-    if (ctx.interruptEnabled) {
-        cpuHandleInterrupt(&ctx);
-        ctx.enableIME = false;
+    if (ctx.interruptMasterEnabled) {
+        cpuHandleInterrupts(&ctx);
+        ctx.enablingIME = false;
     }
 
-    if (ctx.enableIME) {
-        ctx.interruptEnabled = true;
+    if (ctx.enablingIME) {
+        ctx.interruptMasterEnabled = true;
     }
 
     return true;
 }
 
 uint16_t cpuGetInterruptReg() {
-    return ctx.interruptRegister;
+    return ctx.interruptEnableRegister;
 }
+
 void cpuSetInterruptRegister(uint8_t n) {
-    ctx.interruptRegister = n;
+    ctx.interruptEnableRegister = n;
+}
+
+void cpuRequestInterrupt(interruptType type) {
+    ctx.interruptFlags |= type;
 }

@@ -199,17 +199,19 @@ static const char *LicCode[0x100] = {
 	[0xFF] = "LJN",
 };
 
+const char *cartLicName() {
+	if(ctx.header->newLicCode <= 0xA4) {
+		return LicCode[ctx.header->licCode];
+	}
+
+	return "UNKNOWN";
+}
+
 const char *cartTypeName() {
     if (ctx.header->type <= 0x22) {
         return RomTypes[ctx.header->type];
     }
-    return "UNKNOWN";
-}
 
-const char *cartLicName() {
-    if(ctx.header->newLicCode <= 0xA4) {
-        return LicCode[ctx.header->licCode];
-    }
     return "UNKNOWN";
 }
 
@@ -222,7 +224,8 @@ bool cartLoad(char *cart) {
         printf("failed to open %s\n", cart);
         return false;
     }
-    printf("Opened %s\n", ctx.filename);
+
+	printf("Opened %s\n", ctx.filename);
 
     //get rom size and than return to start
     fseek(fp, 0, SEEK_END);
@@ -267,5 +270,5 @@ uint8_t cartRead(uint16_t address) {
 
 void cartWrite(uint16_t address, uint8_t value) {
 	printf("Cart Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
-	//NOT IMPLEMENTED
+	//NOIMPL
 }

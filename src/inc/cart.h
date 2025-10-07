@@ -18,12 +18,15 @@ typedef struct {
     uint8_t version;
     uint8_t checksum;
     uint16_t globalChecksum;
-
 } rom_header;
 
 bool cartLoad(char *cart);
 
 uint8_t cartRead(uint16_t address);
 void cartWrite(uint16_t address, uint8_t value);
+
+bool cartNeedSave();
+void cartBatteryLoad();
+void cartBatterySave();
 
 #endif //CART_H

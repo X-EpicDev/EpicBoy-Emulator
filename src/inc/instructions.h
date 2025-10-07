@@ -6,11 +6,11 @@
 //Address Modes
 typedef enum {
     IMPL,       //Implied Address Mode (Does Nothing)
-    REG_N16,    //Loads 16Bit Immediate Value Into Register
+    REG_D16,    //Loads 16Bit Immediate Value Into Register
     REG_REG,    //Loads Data From 1 Register Into Another
     MEMREG_REG, //Loads Data From A Register Into Memory
     REG,        //Used In Single Register Operations
-    REG_N8,     //Loads 8Bit Immediate Value Into Register
+    REG_D8,     //Loads 8Bit Immediate Value Into Register
     REG_MEMREG, //Loads Data From Memory Into A Register
     REG_HLI,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Increments After
     REG_HLD,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Decrements After
@@ -19,35 +19,32 @@ typedef enum {
     REG_A8,     //Loads An Immediate Memory Address Into A Register
     A8_REG,     //Loads A Register into an Immediate Memory Address
     HL_SPR,     //Uses HL As a Pointer To Sprite Memory
-    N16,        //16Bit Immediate Value
-    N8,         //8Bit Immediate Value
-    N16_REG,    //Loads A Register Into A 16Bit Memory Address
-    MEMREG_N8,  //Loads An Immediate Memory Address With 8Bit Data From A Register
+    D16,        //16Bit Immediate Value
+    D8,         //8Bit Immediate Value
+    D16_REG,    //Loads A Register Into A 16Bit Memory Address
+    MEMREG_D8,  //Loads An Immediate Memory Address With 8Bit Data From A Register
     MEMREG,     //Memory Address
     A16_REG,    //Loads A Memory Address With An Immediate Memory Address
-    REG_A16,     //Loads Register With 16Bit Immediate Memory Address
-    A16,
-    E8,
-    REG_E8
+    REG_A16,    //Loads Register With 16Bit Immediate Memory Address
 } addressMode;
 
 //Register Types
 typedef enum {
-    RegNone,//NULL Register
-    RegA,   //Register A
-    RegB,   //Register B
-    RegC,   //Register C
-    RegD,   //Register D
-    RegE,   //Register E
-    RegF,   //Register F
-    RegH,   //Register H
-    RegL,   //Register L
-    RegAF,  //Registers A and F Together
-    RegBC,  //Registers B and C Together
-    RegDE,  //Registers D and E Together
-    RegHL,  //Registers H and L Together
-    RegPC,  //Program Counter
-    RegSP   //Stack Pointer
+    RegNone, //NULL Register
+    RegA,    //Register A
+    RegF,    //Register F
+    RegB,    //Register B
+    RegC,    //Register C
+    RegD,    //Register D
+    RegE,    //Register E
+    RegH,    //Register H
+    RegL,    //Register L
+    RegAF,   //Registers A and F Together
+    RegBC,   //Registers B and C Together
+    RegDE,   //Registers D and E Together
+    RegHL,   //Registers H and L Together
+    RegSP,   //Stack Pointer
+    RegPC    //Program Counter
 } registerType;
 
 //Instruction Types
@@ -80,14 +77,15 @@ typedef enum {
     JP,     //Jumps To Any Specified Address - (3-10 CPU Cycles)
     PUSH,   //Pushes 2 Byte Value From 2 Registers Onto The Stack - (4-6 CPU Cycles)
     RET,    //Return From Subroutine Than Pops Return Function From Stack - (3 CPU Cycles)
+    CB,     //Prefixed Instructions - See Below For CB Instructions
     CALL,   //Calls A Subroutine And Pushes Return Address Onto Stack, Then Jumps To Specified Address - (6 CPU Cycles)
     RETI,   //Returns Interrupt Service Routine And Enables Interrupts - (5 CPU Cycles)
     LDH,    //Loads Data Between Register And Memory Address Om High Memory Range (0xFF00-0xFFFF) - (3-4 CPU Cycles)
-    JPHL,   //Jumps To Register HL - (4 CPU Cycles)
+    JPHL,   //Jumps To Address in Register HL - (4 CPU Cycles)
     DI,     //Disables Interrupts Preventing Them From Happening - (4 CPU Cycles)
     EI,     //Enables Interrupts Allowing Them To Occur - (4 CPU Cycles)
     RST,    //Jumps To Predefined Address And Pushes Return Address Onto Stack
-    CB, //See Below For CB Instructions
+    ERR,    //ERROR
 
     //CB OPCODE Instructions - All Instructions Take 4 CPU Cycles
     RLC,    //Rotates Register Left Through Carry Flag
@@ -119,7 +117,7 @@ typedef struct {
     registerType reg1;
     registerType reg2;
     conditionType condition;
-    uint8_t param;
+    uint8_t parameter;
 } instruction;
 
 instruction *instructionByOpCode(uint8_t opcode);

@@ -10,7 +10,7 @@ typedef struct {
     uint64_t ticks;
 } emuContext;
 
-int emuRun(int argc, char *argv[]);
+int emuRun(int argc, char **argv);
 
 emuContext *emuGetContext();
 

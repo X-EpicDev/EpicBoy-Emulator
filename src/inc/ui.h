@@ -6,8 +6,8 @@
 static const int SCREEN_WIDTH = 1024;
 static const int SCREEN_HEIGHT = 768;
 
-
 void uiInit();
 void uiHandleEvents();
+void uiUpdate();
 
 #endif //UI_H

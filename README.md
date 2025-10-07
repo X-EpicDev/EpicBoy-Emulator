@@ -5,6 +5,9 @@ as a way for me to learn Emulator Development
 
 # Progress
 
+Overall Progress
+[===       ] 30% (For better accuracy look at each section below)
+
 CPU
 [==========] 100% Unprefixed CPU OP-Codes
 [==========] 100% Prefixed CPU OP-Codes
@@ -28,15 +31,15 @@ PPU/GPU
 [          ] 0.00% VRAM Access
 
 Timers / Sound / Input
-[          ] 0.00% Timer Registers (DIV, TIMA, TMA, TAC)
-[          ] 0.00% Serial / Link Cable Support
+[==========] 100%  Timer Registers (DIV, TIMA, TMA, TAC)
+[=====     ] 50%   Serial / Link Cable Support
 [          ] 0.00% Joypad Input
 [          ] 0.00% Sound Registers
 
 Other Core / Future
+[=====     ] 50%   Halt / Stop CPU states
 [          ] 0.00% DMA Transfer
 [          ] 0.00% Gameboy Boot ROM
-[          ] 0.00% Halt / Stop CPU states
 [          ] 0.00% Double-speed mode / GBC support
 [          ] 0.00% RTC (MBC3 timer)
 

@@ -6,13 +6,18 @@ set(CMAKE_C_STANDARD 11)
 
 # ----- DEFINE EXECUTABLE ----- #
 add_executable(${PROJECT_NAME}
-        #src files
-        "src/src/emu.c" "src/src/bus.c" "src/src/cart.c" "src/src/cpu.c" "src/src/ppu.c" "src/src/timer.c" "src/main.c"
-        "src/src/instructions.c" "src/src/cpuUtil.c" "src/src/cpuProc.c" "src/src/cpuFetch.c" "src/src/ram.c" "src/src/stack.c"
-        "src/src/interrupt.c" "src/src/ui.c"
+        #main
+        "src/main.c"
 
-        "src/inc/emu.h" "src/inc/bus.h" "src/inc/cart.h" "src/inc/cpu.h" "src/inc/ppu.h" "src/inc/timer.h" "src/inc/common.h"
-        "src/inc/instructs.h" "src/inc/ram.h" "src/inc/stack.h" "src/inc/interrupt.h" "src/inc/ui.h"
+        #src files
+        "src/src/bus.c" "src/src/cart.c" "src/src/cpu.c" "src/src/cpuFetch.c" "src/src/cpuProc.c" "src/src/cpuUtil.c"
+        "src/src/dbg.c" "src/src/emu.c" "src/src/instructions.c" "src/src/interrupts.c" "src/src/io.c" "src/src/ppu.c"
+        "src/src/ram.c" "src/src/stack.c" "src/src/timer.c" "src/src/ui.c"
+
+        #include files
+        "src/inc/bus.h" "src/inc/cart.h" "src/inc/common.h" "src/inc/cpu.h" "src/inc/dbg.h" "src/inc/emu.h"
+        "src/inc/instructions.h" "src/inc/interrupts.h" "src/inc/io.h" "src/inc/ppu.h" "src/inc/ram.h" "src/inc/stack.h"
+        "src/inc/timer.h" "src/inc/ui.h"
 )
 
 # ----- ADD SDL3 TO PROJECT ----- #

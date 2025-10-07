@@ -4,133 +4,97 @@
 
 extern CPUContext ctx;
 
-//fetch current instruction
 void fetchData() {
     ctx.memoryDestination = 0;
     ctx.destinationIsMemory = false;
 
-    if (ctx.CurrentInstruction == NULL) {
+    if (ctx.currentInstruction == NULL) {
         return;
     }
 
-    //address modes switch
-    switch(ctx.CurrentInstruction->mode) {
-
-        case IMPL:
-            return;
+    switch(ctx.currentInstruction->mode) {
+        case IMPL: return;
 
         case REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg1);
             return;
 
         case REG_REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg2);
             return;
 
-        case REG_N8:
-            ctx.fetchData = busRead(ctx.regs.PC);
+        case REG_D8:
+            ctx.fetchedData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
 
-        case REG_E8: {
-            uint8_t raw = busRead(ctx.regs.PC);
-            emuCycles(1);
-
-            ctx.fetchData = (int8_t)raw;
-
-            ctx.regs.PC++;
-            return;
-        }
-
-        case REG_N16: {
+        case REG_D16:
+        case D16: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);
 
             uint16_t hi = busRead(ctx.regs.PC + 1);
             emuCycles(1);
 
-            uint16_t value = lo | (hi << 8);
+            ctx.fetchedData = lo | (hi << 8);
+
             ctx.regs.PC += 2;
-
-            // Write directly into the target register pair
-            cpuSetReg(ctx.CurrentInstruction->reg1, value);
-
-            return;
-        }
-
-        case A16:
-        case N16: {
-            uint16_t lo = busRead(ctx.regs.PC);
-            emuCycles(1);
-
-            uint16_t hi = busRead(ctx.regs.PC + 1);
-            emuCycles(1);
-
-            ctx.fetchData = lo | (hi << 8);
-            ctx.regs.PC += 2;
-
-            return;
-        }
-
-        case E8: {
-            uint8_t raw = busRead(ctx.regs.PC);
-            emuCycles(1);
-
-            ctx.fetchData = (int8_t)raw;
-            ctx.regs.PC++;
 
             return;
         }
 
         case MEMREG_REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
-            ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg2);
+            ctx.memoryDestination = cpuReadReg(ctx.currentInstruction->reg1);
             ctx.destinationIsMemory = true;
 
-            if (ctx.CurrentInstruction->reg1 == RegC) {
+            if (ctx.currentInstruction->reg1 == RegC) {
                 ctx.memoryDestination |= 0xFF00;
-            } return;
+            }
+
+            return;
 
         case REG_MEMREG: {
-            uint16_t address = cpuReadReg(ctx.CurrentInstruction->reg2);
+            uint16_t address = cpuReadReg(ctx.currentInstruction->reg2);
 
-            if (ctx.CurrentInstruction->reg2 == RegC) {
+            if (ctx.currentInstruction->reg2 == RegC) {
                 address |= 0xFF00;
             }
 
-            ctx.fetchData = busRead(address);
+            ctx.fetchedData = busRead(address);
             emuCycles(1);
+
         } return;
 
         case REG_HLI:
-            ctx.fetchData = busRead(cpuReadReg(RegHL));
+            ctx.fetchedData = busRead(cpuReadReg(ctx.currentInstruction->reg2));
             emuCycles(1);
             cpuSetReg(RegHL, cpuReadReg(RegHL) + 1);
             return;
 
         case REG_HLD:
-            ctx.fetchData = busRead(cpuReadReg(RegHL));
+            ctx.fetchedData = busRead(cpuReadReg(ctx.currentInstruction->reg2));
             emuCycles(1);
             cpuSetReg(RegHL, cpuReadReg(RegHL) - 1);
             return;
 
         case HLI_REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
-            ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg2);
+            ctx.memoryDestination = cpuReadReg(ctx.currentInstruction->reg1);
             ctx.destinationIsMemory = true;
             cpuSetReg(RegHL, cpuReadReg(RegHL) + 1);
             return;
 
         case HLD_REG:
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
-            ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg2);
+            ctx.memoryDestination = cpuReadReg(ctx.currentInstruction->reg1);
             ctx.destinationIsMemory = true;
             cpuSetReg(RegHL, cpuReadReg(RegHL) - 1);
             return;
 
         case REG_A8:
-            ctx.fetchData = busRead(ctx.regs.PC);
+            ctx.fetchedData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
@@ -142,23 +106,20 @@ void fetchData() {
             ctx.regs.PC++;
             return;
 
-        case HL_SPR: {
-            uint8_t raw = busRead(ctx.regs.PC);
-            emuCycles(1);
-            ctx.regs.PC++;
-
-            // Store as signed offset for executor
-            ctx.fetchData = (int8_t)raw;
-            return;
-        }
-
-        case N8:
-            ctx.fetchData = busRead(ctx.regs.PC);
+        case HL_SPR:
+            ctx.fetchedData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
             return;
 
-        case A16_REG: {
+        case D8:
+            ctx.fetchedData = busRead(ctx.regs.PC);
+            emuCycles(1);
+            ctx.regs.PC++;
+            return;
+
+        case A16_REG:
+        case D16_REG: {
             uint16_t lo = busRead(ctx.regs.PC);
             emuCycles(1);
 
@@ -169,35 +130,22 @@ void fetchData() {
             ctx.destinationIsMemory = true;
 
             ctx.regs.PC += 2;
+            ctx.fetchedData = cpuReadReg(ctx.currentInstruction->reg2);
 
-            ctx.fetchData = cpuReadReg(ctx.CurrentInstruction->reg2);
-            return;
-        }
-        case N16_REG: {
-            uint16_t lo = busRead(ctx.regs.PC);
-            emuCycles(1);
-
-            uint16_t hi = busRead(ctx.regs.PC + 1);
-            emuCycles(1);
-
-            uint16_t value = lo | (hi << 8);
-
-            ctx.regs.PC += 2;
-
-            cpuSetReg(ctx.CurrentInstruction->reg1, value);
         } return;
 
-        case MEMREG_N8:
-            ctx.fetchData = busRead(ctx.regs.PC);
+        case MEMREG_D8:
+            ctx.fetchedData = busRead(ctx.regs.PC);
             emuCycles(1);
             ctx.regs.PC++;
-            ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.memoryDestination = cpuReadReg(ctx.currentInstruction->reg1);
             ctx.destinationIsMemory = true;
             return;
 
         case MEMREG:
-            ctx.memoryDestination = cpuReadReg(ctx.CurrentInstruction->reg1);
+            ctx.memoryDestination = cpuReadReg(ctx.currentInstruction->reg1);
             ctx.destinationIsMemory = true;
+            ctx.fetchedData = busRead(cpuReadReg(ctx.currentInstruction->reg1));
             emuCycles(1);
             return;
 
@@ -211,14 +159,15 @@ void fetchData() {
             uint16_t address = lo | (hi << 8);
 
             ctx.regs.PC += 2;
-            ctx.fetchData = busRead(address);
+            ctx.fetchedData = busRead(address);
             emuCycles(1);
 
             return;
         }
 
         default:
-            printf("Unknown Addressing Mode %d (%02X)\n", ctx.CurrentInstruction->mode, ctx.currentOPCode);
+            printf("Unknown Addressing Mode %d (%02X)\n", ctx.currentInstruction->mode, ctx.currentOPCode);
             exit(-7);
+            return;
     }
 }

@@ -1,13 +1,24 @@
+#include "../inc/emu.h"
+#include "../inc/cart.h"
+#include "../inc/cpu.h"
+#include "../inc/timer.h"
+#include "../inc/ui.h"
+
+//TODO ADD WIN32 ALTERNATIVE TO PTHREAD
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 
-#include "../inc/emu.h"
-#include "../inc/cart.h"
-#include "../inc/cpu.h"
-#include "../inc/ui.h"
-
-
+//
+// Emu components:
+//
+// |Cart|
+// |CPU|
+// |Address Bus|
+// |PPU|
+// |Timer|
+//
+//
 
 static emuContext ctx;
 
@@ -16,6 +27,7 @@ emuContext *emuGetContext() {
 }
 
 void *cpuRun(void *p) {
+    timerInit();
     cpuInit();
 
     ctx.running = true;
@@ -32,8 +44,6 @@ void *cpuRun(void *p) {
             printf("CPU Stopped\n");
             return 0;
         }
-
-        ctx.ticks++;
     }
 
     return 0;
@@ -66,10 +76,15 @@ int emuRun(int argc, char **argv) {
         uiHandleEvents();
     }
 
-
     return 0;
 }
 
 void emuCycles(int cpuCycles) {
-    //Not IMPL
+    //TODO
+    int n = cpuCycles * 4;
+
+    for (int i = 0; i < n; i++) {
+        ctx.ticks++;
+        timerTick();
+    }
 }

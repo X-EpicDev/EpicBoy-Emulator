@@ -10,7 +10,13 @@ SDL_Texture *sdlTexture;
 SDL_Surface *screen;
 
 void uiInit() {
-    SDL_CreateWindowAndRenderer("yep",SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
+
+    SDL_Init(SDL_INIT_VIDEO);
+    printf("SDL INIT\n");
+    TTF_Init();
+    printf("TTF INIT\n");
+
+    SDL_CreateWindowAndRenderer("EpicBoy",SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
 }
 
 void delay(uint32_t ms) {

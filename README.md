@@ -1,4 +1,4 @@
-<a href="https://www.fontspace.com/category/pixel"><img src="https://see.fontimg.com/api/rf5/JpBgm/MDIxNjc2MDU1NTllNDQzYzhhNDU0ZWIyYWQxMGZmYWYudHRm/VGhlIEVwaWNCb3kgRW11bGF0b3I/raster-forge-regular.png?r=fs&h=30&w=1000&fg=000000&bg=FFFFFF&tb=1&s=30" alt="Pixel fonts"></a>
+<a href="https://www.fontspace.com/category/pixel"><img src="https://see.fontimg.com/api/rf5/JpBgm/MDIxNjc2MDU1NTllNDQzYzhhNDU0ZWIyYWQxMGZmYWYudHRm/VGhlIEVwaWNCb3kgRW11bGF0b3I/raster-forge-regular.png?r=fs&h=30&w=1000&fg=801717&bg=FFFFFF&tb=1&s=30" alt="Pixel fonts"></a>
 
 <pre>
 The EpicBoy Emulator is a general GameBoy emulator written in Pure C, and was created 

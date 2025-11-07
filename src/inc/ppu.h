@@ -9,11 +9,11 @@ static const int16_t yResolution = 144;
 static const int16_t xResolution = 160;
 
 typedef enum {
-    Tile,
-    DATA0,
-    DATA1,
-    IDLE,
-    PUSH,
+    FS_TILE,
+    FS_DATA0,
+    FS_DATA1,
+    FS_IDLE,
+    FS_PUSH,
 } fetchState;
 
 typedef struct fifo_entry {

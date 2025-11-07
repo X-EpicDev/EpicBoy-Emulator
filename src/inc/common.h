@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define BIT(a, n) ((a & (1 << n)) ? 1 : 0)
 #define BITSET(a, n, on) { if (on) a |= (1 << n); else a &= ~(1 << n);}

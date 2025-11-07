@@ -3,11 +3,13 @@
 #include "../inc/cpu.h"
 #include "../inc/timer.h"
 #include "../inc/ui.h"
+#include "../inc/dma.h"
 
 //TODO ADD WIN32 ALTERNATIVE TO PTHREAD
 #include <stdio.h>
 #include <pthread.h>
-#include <unistd.h>
+
+
 
 //
 // Emu components:
@@ -74,17 +76,21 @@ int emuRun(int argc, char **argv) {
     while (!ctx.die) {
         usleep(1000);
         uiHandleEvents();
+
+        uiUpdate();
     }
 
     return 0;
 }
 
 void emuCycles(int cpuCycles) {
-    //TODO
-    int n = cpuCycles * 4;
 
-    for (int i = 0; i < n; i++) {
-        ctx.ticks++;
-        timerTick();
+    for (int i = 0; i < cpuCycles; i++) {
+        for (int n=0; n<4; n++) {
+            ctx.ticks++;
+            timerTick();
+        }
+
+        dmaTick();
     }
 }

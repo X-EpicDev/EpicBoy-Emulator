@@ -2,7 +2,9 @@
 #include "../inc/cart.h"
 #include "../inc/ram.h"
 #include "../inc/cpu.h"
+#include "../inc/dma.h"
 #include "../inc/io.h"
+#include "../inc/ppu.h"
 
 // 0x0000 - 0x3FFF : ROM BANK 0
 // 0x4000 - 0x7FFF : ROM BANK 1
@@ -24,9 +26,7 @@ uint8_t busRead(uint16_t address) {
         return cartRead(address);
     } else if (address < 0xA000) {
         //CHARACTER/MAP DATA
-        //TODO
-        printf("Unsupported Bus Read attempted at 0x%04X\n", address);
-        NOIMPL
+        return ppuVramRead(address);
     } else if (address < 0xC000) {
         //CART RAM
         return cartRead(address);
@@ -38,22 +38,19 @@ uint8_t busRead(uint16_t address) {
         return 0;
     } else if (address < 0xFEA0) {
         //OAM
-        //TODO
-        printf("Unsupported Bus Read attempted at 0x%04X\n", address);
-        //NOIMPL
-        return 0x0;
+        if (dmaTransferring()) {
+            return 0xFF;
+        }
+
+        return ppuOamRead(address);
     } else if (address < 0xFF00) {
         //SYSTEM RESERVED (NOT USABLE)
         return 0;
     } else if (address < 0xFF80) {
         //IO REGISTERS
-        //TODO
-
-        //NOIMPL
         return ioRead(address);
     } else if (address == 0xFFFF) {
         //INTERRUPT ENABLE REGISTER
-        //TODO
         return cpuGetInterruptReg();
     }
 
@@ -67,9 +64,7 @@ void busWrite(uint16_t address, uint8_t value) {
         cartWrite(address, value);
     } else if (address < 0xA000) {
         //Char/Map Data
-        //TODO
-        printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
-        //NOIMPL
+        ppuVramWrite(address, value);
     } else if (address < 0xC000) {
         //EXTERNAL-RAM
         cartWrite(address, value);
@@ -80,17 +75,16 @@ void busWrite(uint16_t address, uint8_t value) {
         //RESERVED ECHO RAM
     } else if (address < 0xFEA0) {
         //OAM
+        if (dmaTransferring()) {
+            return;
+        }
 
-        //TODO
-        printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
-        //NOIMPL
+        ppuOamWrite(address, value);
     } else if (address < 0xFF00) {
         //SYSTEM RESERVED (NOT USABLE)
     } else if (address < 0xFF80) {
         //IO Registers
-        //TODO
         ioWrite(address, value);
-        //NOIMPL
     } else if (address == 0xFFFF) {
         // INTERRUPT SET ENABLE REGISTER
 

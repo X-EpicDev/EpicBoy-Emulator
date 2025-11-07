@@ -4,3 +4,11 @@
 [submodule "deps/SDL3TFF"]
 	path = deps/SDL3TFF
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "deps/SDL2"]
+	path = deps/SDL2
+	url = https://github.com/libsdl-org/SDL.git
+	branch = SDL2
+[submodule "deps/SDL2TFF"]
+	path = deps/SDL2TFF
+	url = https://github.com/libsdl-org/SDL_ttf.git
+	branch = SDL2

@@ -23,26 +23,26 @@ Memory/Bus
 [          ] 0%   MBC1/MBC2/MBC3/MBC5 Support
 
 PPU/GPU
-[          ] 0.00% Tile Data (0x8000-0x97FF)
-[          ] 0.00% BG Map 1 (0x9800-0x98FF)
-[          ] 0.00% BG Map 2 (0x9C00-0x9FFF)
-[          ] 0.00% Sprite Attribute Memory/OAM (0xFE00-0xFE9F)
-[          ] 0.00% Palette/Colours
-[          ] 0.00% LCD Control/Status
-[          ] 0.00% VRAM Access
+[==========] 100% Sprite Attribute Memory/OAM (0xFE00-0xFE9F)
+[==========] 100% VRAM Access
+[          ] 0%   Tile Data (0x8000-0x97FF)
+[          ] 0%   BG Map 1 (0x9800-0x98FF)
+[          ] 0%   BG Map 2 (0x9C00-0x9FFF)
+[          ] 0%   Palette/Colours
+[          ] 0%   LCD Control/Status
 
 Timers / Sound / Input
-[==========] 100%  Timer Registers (DIV, TIMA, TMA, TAC)
-[=====     ] 50%   Serial / Link Cable Support
-[          ] 0.00% Joypad Input
-[          ] 0.00% Sound Registers
+[==========] 100% Timer Registers (DIV, TIMA, TMA, TAC)
+[=====     ] 50%  Serial / Link Cable Support
+[          ] 0%   Joypad Input
+[          ] 0%   Sound Registers
 
 Other Core / Future
-[=====     ] 50%   Halt / Stop CPU states
-[          ] 0.00% DMA Transfer
-[          ] 0.00% Gameboy Boot ROM
-[          ] 0.00% Double-speed mode / GBC support
-[          ] 0.00% RTC (MBC3 timer)
+[==========] 100% DMA Transfer
+[=====     ] 50%  Halt / Stop CPU states
+[          ] 0%   GameBoy Boot ROM
+[          ] 0%   Double-speed mode / GBC support
+[          ] 0%   RTC (MBC3 timer)
 
 # Credits
 

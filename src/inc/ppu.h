@@ -16,8 +16,8 @@ typedef enum {
     FS_PUSH,
 } fetchState;
 
-typedef struct fifo_entry {
-    struct fifo_entry *next;
+typedef struct _fifo_entry {
+    struct _fifo_entry *next;
     uint32_t value; //32-Bit Color Value
 } fifo_entry;
 
@@ -46,11 +46,11 @@ typedef struct {
     uint8_t x;
     uint8_t tile;
 
-    uint8_t f_cgb_pn : 3;
-    uint8_t f_cgb_vram_bank : 1;
+    uint8_t f_cgbPn : 3;
+    uint8_t f_cgbVramBank : 1;
     uint8_t f_pn : 1;
-    uint8_t f_x_flip : 1;
-    uint8_t f_y_flip : 1;
+    uint8_t f_xFlip : 1;
+    uint8_t f_yFlip : 1;
     uint8_t f_bgp : 1;
 } oamEntry;
 
@@ -67,26 +67,29 @@ typedef struct oamLineEntry {
 } oamLineEntry;
 
 typedef struct {
-    oamEntry oam_ram[40];
+    oamEntry oamRam[40];
     uint8_t vram[0x2000];
 
     pixelFifoContext pfc;
 
-    uint8_t line_sprite_count; //0 to 10 sprites.
-    oamLineEntry *line_sprites; //linked list of current sprites on line.
-    oamLineEntry line_entry_array[10]; //memory to use for list.
+    uint8_t lineSpriteCount; //0 to 10 sprites.
+    oamLineEntry *lineSprites; //linked list of current sprites on line.
+    oamLineEntry lineEntryArray[10]; //memory to use for list.
 
-    uint8_t fetched_entry_count;
-    oamEntry fetched_entries[3]; //entries fetched during pipeline.
-    uint8_t window_line;
+    uint8_t fetchedEntryCount;
+    oamEntry fetchedEntries[3]; //entries fetched during pipeline.
+    uint8_t windowLine;
 
-    uint32_t current_frame;
-    uint32_t line_ticks;
-    uint32_t *video_buffer;
+    uint32_t currentFrame;
+    uint32_t lineTicks;
+    uint32_t *videoBuffer;
 } ppuContext;
 
 void ppuInit();
 void ppuTick();
+
+void pipelineFifoReset();
+void pipelineProcess();
 
 void ppuOamWrite(uint16_t address, uint8_t value);
 uint8_t ppuOamRead(uint16_t address);

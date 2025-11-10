@@ -20,6 +20,12 @@ add_executable(${PROJECT_NAME}
         "src/inc/timer.h" "src/inc/ui.h"
         src/inc/dma.h
         src/src/dma.c
+        src/inc/lcd.h
+        src/src/lcd.c
+        src/inc/ppuSM.h
+        src/src/ppuSM.c
+        src/src/ppuPipeline.c
+        src/inc/gamepad.h
 )
 
 # ----- ADD SDL2 TO PROJECT ----- #

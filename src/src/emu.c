@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include "../inc/ppu.h"
 
 
 //
@@ -31,6 +32,7 @@ emuContext *emuGetContext() {
 void *cpuRun(void *p) {
     timerInit();
     cpuInit();
+    ppuInit();
 
     ctx.running = true;
     ctx.paused = false;
@@ -73,11 +75,17 @@ int emuRun(int argc, char **argv) {
         return -1;
     }
 
+    uint32_t previousFrame = 0;
+
     while (!ctx.die) {
         usleep(1000);
         uiHandleEvents();
 
-        uiUpdate();
+        if (previousFrame != ppuGetContext()->currentFrame) {
+            uiUpdate();
+        }
+
+        previousFrame = ppuGetContext()->currentFrame;
     }
 
     return 0;
@@ -89,6 +97,7 @@ void emuCycles(int cpuCycles) {
         for (int n=0; n<4; n++) {
             ctx.ticks++;
             timerTick();
+            ppuTick();
         }
 
         dmaTick();

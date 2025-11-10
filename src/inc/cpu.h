@@ -54,7 +54,7 @@ InstructionProcess instructionGetProcessor(instructionType type);
 uint16_t cpuReadReg(registerType rt);
 void cpuSetReg(registerType rt, uint16_t value);
 
-uint16_t cpuGetInterruptReg();
+uint8_t cpuGetInterruptReg();
 void cpuSetInterruptRegister(uint8_t n);
 
 uint8_t cpuReadReg8(registerType rt);

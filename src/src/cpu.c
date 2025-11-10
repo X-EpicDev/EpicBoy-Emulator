@@ -7,6 +7,8 @@
 
 CPUContext ctx = {0};
 
+#define CPU_DEBUG 0
+
 void cpuInit() {
     ctx.regs.PC = 0x100;
     ctx.regs.SP = 0xFFFE;
@@ -47,12 +49,7 @@ bool cpuStep() {
         fetchInstruction();
         emuCycles(1);
         fetchData();
-
-        //printf("A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n",
-        //    ctx.regs.A, ctx.regs.F, ctx.regs.B, ctx.regs.C, ctx.regs.D, ctx.regs.E, ctx.regs.H, ctx.regs.L, ctx.regs.SP, ctx.regs.PC,
-        //    busRead(pc+1), busRead(pc+2), busRead(pc+3), busRead(pc+4));
-
-
+#if CPU_DEBUG == 1
         char flags[16];
         sprintf(flags, "%c%c%c%c",
             ctx.regs.F & (1 << 7) ? 'Z' : '-',
@@ -69,7 +66,7 @@ bool cpuStep() {
             pc, inst, ctx.currentOPCode,
             busRead(pc + 1), busRead(pc + 2), ctx.regs.A, flags, ctx.regs.B, ctx.regs.C,
             ctx.regs.D, ctx.regs.E, ctx.regs.H, ctx.regs.L);
-
+#endif
         if (ctx.currentInstruction == NULL) {
             printf("Unknown Instruction %02X\n", ctx.currentOPCode);
             exit(-7);
@@ -100,7 +97,7 @@ bool cpuStep() {
     return true;
 }
 
-uint16_t cpuGetInterruptReg() {
+uint8_t cpuGetInterruptReg() {
     return ctx.interruptEnableRegister;
 }
 

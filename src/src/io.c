@@ -2,11 +2,9 @@
 #include "../inc/timer.h"
 #include "../inc/cpu.h"
 #include "../inc/dma.h"
+#include "../inc/lcd.h"
 
 static char SerialData[2];
-
-//temp for testing DMA
-uint8_t ly = 0;
 
 uint8_t ioRead(uint16_t address) {
     if (address == 0xFF01) {
@@ -25,8 +23,8 @@ uint8_t ioRead(uint16_t address) {
         return cpuGetInterruptFlags();
     }
 
-    if (address == 0xFF44) {
-        return ly++;
+    if (BETWEEN(address, 0xFF40, 0xFF4B)) {
+        return lcdRead(address);
     }
 
     printf("Unsupported Bus Read attempted at 0x%04X\n", address);
@@ -54,9 +52,9 @@ void ioWrite(uint16_t address, uint8_t value) {
         return;
     }
 
-    if (address == 0xFF46) {
-        dmaStart(value);
-        printf("DMA START");
+    if (BETWEEN(address, 0xFF40, 0xFF4B)) {
+        lcdWrite(address, value);
+        return;
     }
 
     printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);

@@ -72,7 +72,7 @@ uint8_t cpuReadReg8(registerType rt) {
         }
         default:
             printf("**ERR INVALID REG8: %d\n", rt);
-            exit(-1);
+            NOIMPL
     }
 }
 

@@ -5,7 +5,7 @@
 
 //Processes CPU Instructions
 
-void cpuSetFlags(CPUContext *ctx, char z, char n, char h, char c) {
+void cpuSetFlags(CPUContext *ctx, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
     if (z != -1) {
         BITSET(ctx->regs.F, 7, z);
     }
@@ -303,7 +303,7 @@ static void ProcessLD(CPUContext *ctx) {
 
         cpuSetFlags(ctx, 0, 0, hflag, cflag);
         cpuSetReg(ctx->currentInstruction->reg1,
-            cpuReadReg(ctx->currentInstruction->reg2) + (char)ctx->fetchedData);
+            cpuReadReg(ctx->currentInstruction->reg2) + (int8_t)ctx->fetchedData);
 
         return;
     }
@@ -354,7 +354,7 @@ static void ProcessJP(CPUContext *ctx) {
 }
 
 static void ProcessJR(CPUContext *ctx) {
-    int8_t rel = (char)(ctx->fetchedData & 0xFF);
+    int8_t rel = (uint8_t)(ctx->fetchedData & 0xFF);
     uint16_t addr = ctx->regs.PC + rel;
 
     goToAddress(ctx, addr, false);
@@ -510,7 +510,7 @@ static void ProcessADD(CPUContext *ctx) {
     }
 
     if (ctx->currentInstruction->reg1 == RegSP) {
-        val = cpuReadReg(ctx->currentInstruction->reg1) + (char)ctx->fetchedData;
+        val = cpuReadReg(ctx->currentInstruction->reg1) + (uint8_t)ctx->fetchedData;
     }
 
     int z = (val & 0xFF) == 0;

@@ -1,8 +1,9 @@
 #include "../inc/ui.h"
 #include "../inc/emu.h"
 #include "../inc/bus.h"
+#include "../inc/ppu.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <SDL_ttf.h>
 
 SDL_Window *sdlWindow;
@@ -26,14 +27,31 @@ void uiInit() {
 
     SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
 
-    SDL_CreateWindowAndRenderer(16*8*scale, 32*8*scale, 0, &sdlDebugWindow, &sdlDebugRenderer);
+    screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
+                                        0x00FF0000,
+                                        0x0000FF00,
+                                        0x000000FF,
+                                        0xFF000000);
+    sdlTexture = SDL_CreateTexture(sdlRenderer,
+                                        SDL_PIXELFORMAT_ARGB8888,
+                                        SDL_TEXTUREACCESS_STREAMING,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    SDL_CreateWindowAndRenderer(16*8*scale, 32*8*scale, 0,
+        &sdlDebugWindow, &sdlDebugRenderer);
 
     debugScreen = SDL_CreateRGBSurface(0, (16*8*scale) + (16*scale),
-        (32*8*scale) + (64*scale),32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+                                        (32*8*scale) + (64*scale),32,
+                                        0x00FF0000,
+                                        0x0000FF00,
+                                        0x000000FF,
+                                        0xFF000000);
 
-    sdlDebugTexture = SDL_CreateTexture(sdlDebugRenderer, SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,
-       (16*8*scale) + (16*scale),
-        (32*8*scale) + (64*scale));
+    sdlDebugTexture = SDL_CreateTexture(sdlDebugRenderer,
+                                        SDL_PIXELFORMAT_ARGB8888,
+                                        SDL_TEXTUREACCESS_STREAMING,
+                                        (16*8*scale) + (16*scale),
+                                        (32*8*scale) + (64*scale));
 
     int x,y;
     SDL_GetWindowPosition(sdlWindow, &x, &y);
@@ -42,6 +60,10 @@ void uiInit() {
 
 void delay(uint32_t ms) {
     SDL_Delay(ms);
+}
+
+uint32_t getTicks() {
+    return SDL_GetTicks();
 }
 
 static unsigned long tileColours[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
@@ -102,6 +124,28 @@ void updateDBGWindow() {
 }
 
 void uiUpdate() {
+    SDL_Rect rc;
+    rc.x = rc.y = 0;
+    rc.w = rc.h = 2048;
+
+    uint32_t *videoBuffer = ppuGetContext()->videoBuffer;
+
+    for (int lineNum = 0; lineNum < yResolution; lineNum++) {
+        for (int x = 0; x < xResolution; x++) {
+            rc.x = x *scale;
+            rc.y = lineNum * scale;
+            rc.w = scale;
+            rc.h = scale;
+
+            SDL_FillRect(screen, &rc, videoBuffer[x+(lineNum * xResolution)]);
+        }
+    }
+
+    SDL_UpdateTexture(sdlTexture, NULL, screen->pixels, screen->pitch);
+    SDL_RenderClear(sdlRenderer);
+    SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+    SDL_RenderPresent(sdlRenderer);
+
     updateDBGWindow();
 }
 

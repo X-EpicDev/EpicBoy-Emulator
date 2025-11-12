@@ -5,106 +5,108 @@
 #include "../inc/dbg.h"
 #include "../inc/timer.h"
 
-CPUContext ctx = {0};
+cpu_context ctx = {0};
 
 #define CPU_DEBUG 0
 
-void cpuInit() {
-    ctx.regs.PC = 0x100;
-    ctx.regs.SP = 0xFFFE;
-    *((short *)&ctx.regs.A) = 0xB001;
-    *((short *)&ctx.regs.B) = 0x1300;
-    *((short *)&ctx.regs.D) = 0xD800;
-    *((short *)&ctx.regs.H) = 0x4D01;
-    ctx.interruptEnableRegister = 0;
-    ctx.interruptFlags = 0;
-    ctx.interruptMasterEnabled = false;
-    ctx.enablingIME = false;
+void cpu_init() {
+    ctx.regs.pc = 0x100;
+    ctx.regs.sp = 0xFFFE;
+    *((short *)&ctx.regs.a) = 0xB001;
+    *((short *)&ctx.regs.b) = 0x1300;
+    *((short *)&ctx.regs.d) = 0xD800;
+    *((short *)&ctx.regs.h) = 0x4D01;
+    ctx.ie_register = 0;
+    ctx.int_flags = 0;
+    ctx.int_master_enabled = false;
+    ctx.enabling_ime = false;
 
-    timerGetContext()->div = 0xABCC;
+    timer_get_context()->div = 0xABCC;
 }
 
-static void fetchInstruction() {
-    ctx.currentOPCode = busRead(ctx.regs.PC++);
-    ctx.currentInstruction = instructionByOpCode(ctx.currentOPCode);
+static void fetch_instruction() {
+    ctx.cur_opcode = bus_read(ctx.regs.pc++);
+    ctx.cur_inst = instruction_by_opcode(ctx.cur_opcode);
 }
 
-void fetchData();
+void fetch_data();
 
 static void execute() {
-    InstructionProcess process = instructionGetProcessor(ctx.currentInstruction->type);
+    IN_PROC proc = inst_get_processor(ctx.cur_inst->type);
 
-    if (!process) {
-        NOIMPL
+    if (!proc) {
+        NO_IMPL
     }
 
-    process(&ctx);
+    proc(&ctx);
 }
 
-bool cpuStep() {
+bool cpu_step() {
 
     if (!ctx.halted) {
-        uint16_t pc = ctx.regs.PC;
+        u16 pc = ctx.regs.pc;
 
-        fetchInstruction();
-        emuCycles(1);
-        fetchData();
+        fetch_instruction();
+        emu_cycles(1);
+        fetch_data();
+
 #if CPU_DEBUG == 1
         char flags[16];
         sprintf(flags, "%c%c%c%c",
-            ctx.regs.F & (1 << 7) ? 'Z' : '-',
-            ctx.regs.F & (1 << 6) ? 'N' : '-',
-            ctx.regs.F & (1 << 5) ? 'H' : '-',
-            ctx.regs.F & (1 << 4) ? 'C' : '-'
+            ctx.regs.f & (1 << 7) ? 'Z' : '-',
+            ctx.regs.f & (1 << 6) ? 'N' : '-',
+            ctx.regs.f & (1 << 5) ? 'H' : '-',
+            ctx.regs.f & (1 << 4) ? 'C' : '-'
         );
 
         char inst[16];
-        instructionToString(&ctx, inst);
+        inst_to_str(&ctx, inst);
 
         printf("%08lX - %04X: %-12s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n",
-            emuGetContext()->ticks,
-            pc, inst, ctx.currentOPCode,
-            busRead(pc + 1), busRead(pc + 2), ctx.regs.A, flags, ctx.regs.B, ctx.regs.C,
-            ctx.regs.D, ctx.regs.E, ctx.regs.H, ctx.regs.L);
+            emu_get_context()->ticks,
+            pc, inst, ctx.cur_opcode,
+            bus_read(pc + 1), bus_read(pc + 2), ctx.regs.a, flags, ctx.regs.b, ctx.regs.c,
+            ctx.regs.d, ctx.regs.e, ctx.regs.h, ctx.regs.l);
 #endif
-        if (ctx.currentInstruction == NULL) {
-            printf("Unknown Instruction %02X\n", ctx.currentOPCode);
+
+        if (ctx.cur_inst == NULL) {
+            printf("Unknown Instruction! %02X\n", ctx.cur_opcode);
             exit(-7);
         }
 
-        dbgUpdate();
-        dbgPrint();
+        dbg_update();
+        dbg_print();
 
         execute();
     } else {
-        //IF HALTED
-        emuCycles(1);
+        //is halted...
+        emu_cycles(1);
 
-        if (ctx.interruptFlags) {
+        if (ctx.int_flags) {
             ctx.halted = false;
         }
     }
 
-    if (ctx.interruptMasterEnabled) {
-        cpuHandleInterrupts(&ctx);
-        ctx.enablingIME = false;
+    if (ctx.int_master_enabled) {
+        cpu_handle_interrupts(&ctx);
+        ctx.enabling_ime = false;
     }
 
-    if (ctx.enablingIME) {
-        ctx.interruptMasterEnabled = true;
+    if (ctx.enabling_ime) {
+        ctx.int_master_enabled = true;
     }
 
     return true;
 }
 
-uint8_t cpuGetInterruptReg() {
-    return ctx.interruptEnableRegister;
+u8 cpu_get_ie_register() {
+    return ctx.ie_register;
 }
 
-void cpuSetInterruptRegister(uint8_t n) {
-    ctx.interruptEnableRegister = n;
+void cpu_set_ie_register(u8 n) {
+    ctx.ie_register = n;
 }
 
-void cpuRequestInterrupt(interruptType type) {
-    ctx.interruptFlags |= type;
+void cpu_request_interrupt(interrupt_type t) {
+    ctx.int_flags |= t;
 }

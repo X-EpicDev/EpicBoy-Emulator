@@ -4,15 +4,15 @@
 #include "cpu.h"
 
 typedef enum {
-    Interrupt_VBLANK = 1,
-    Interrupt_LCDSTAT = 2,
-    Interrupt_TIMER = 4,
-    Interrupt_SERIAL = 8,
-    Interrupt_JOYPAD = 16,
-} interruptType;
+    IT_VBLANK = 1,
+    IT_LCD_STAT = 2,
+    IT_TIMER = 4,
+    IT_SERIAL = 8,
+    IT_JOYPAD = 16
+} interrupt_type;
 
-void cpuRequestInterrupt(interruptType type);
+void cpu_request_interrupt(interrupt_type t);
 
-void cpuHandleInterrupts(CPUContext *ctx);
+void cpu_handle_interrupts(cpu_context *ctx);
 
 #endif //INTERRUPT_H

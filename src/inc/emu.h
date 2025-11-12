@@ -7,13 +7,13 @@ typedef struct {
     bool paused;
     bool running;
     bool die;
-    uint64_t ticks;
-} emuContext;
+    u64 ticks;
+} emu_context;
 
-int emuRun(int argc, char **argv);
+int emu_run(int argc, char **argv);
 
-emuContext *emuGetContext();
+emu_context *emu_get_context();
 
-void emuCycles(int cpuCycles);
+void emu_cycles(int cpu_cycles);
 
 #endif //EMU_H

@@ -1,5 +1,5 @@
 #include "inc/emu.h"
 
 int main(int argc, char *argv[]) {
-    return emuRun(argc, argv);
+    return emu_run(argc, argv);
 }

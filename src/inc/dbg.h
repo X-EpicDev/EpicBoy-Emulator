@@ -4,7 +4,7 @@
 #include "common.h"
 #include "cpu.h"
 
-void dbgUpdate();
-void dbgPrint();
+void dbg_update();
+void dbg_print();
 
 #endif //DBG_H

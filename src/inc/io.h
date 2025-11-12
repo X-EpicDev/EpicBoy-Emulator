@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-uint8_t ioRead(uint16_t address);
-void ioWrite(uint16_t address, uint8_t data);
+u8 io_read(u16 address);
+void io_write(u16 address, u8 value);
 
 #endif //IO_H

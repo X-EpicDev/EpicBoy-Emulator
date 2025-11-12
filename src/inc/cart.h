@@ -4,29 +4,29 @@
 #include "common.h"
 
 typedef struct {
-    uint8_t entry[4];
-    uint8_t logo[0x30];
+    u8 entry[4];
+    u8 logo[0x30];
 
     char title[16];
-    uint16_t newLicCode;
-    uint8_t sgbFlag;
-    uint8_t type;
-    uint8_t romSize;
-    uint8_t ramSize;
-    uint8_t destCode;
-    uint8_t licCode;
-    uint8_t version;
-    uint8_t checksum;
-    uint16_t globalChecksum;
+    u16 new_lic_code;
+    u8 sgb_flag;
+    u8 type;
+    u8 rom_size;
+    u8 ram_size;
+    u8 dest_code;
+    u8 lic_code;
+    u8 version;
+    u8 checksum;
+    u16 global_checksum;
 } rom_header;
 
-bool cartLoad(char *cart);
+bool cart_load(char *cart);
 
-uint8_t cartRead(uint16_t address);
-void cartWrite(uint16_t address, uint8_t value);
+u8 cart_read(u16 address);
+void cart_write(u16 address, u8 value);
 
-bool cartNeedSave();
-void cartBatteryLoad();
-void cartBatterySave();
+bool cart_need_save();
+void cart_battery_load();
+void cart_battery_save();
 
 #endif //CART_H

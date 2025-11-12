@@ -1,106 +1,106 @@
 #include "../inc/cpu.h"
 #include "../inc/bus.h"
 
-extern CPUContext ctx;
+extern cpu_context ctx;
 
-uint16_t reverse(uint16_t n) {
+u16 reverse(u16 n) {
     return ((n & 0xFF00) >> 8) | ((n & 0x00FF) << 8);
 }
 
-uint16_t cpuReadReg(registerType rt) {
-    switch (rt) {
-        case RegA: return ctx.regs.A;
-        case RegF: return ctx.regs.F;
-        case RegB: return ctx.regs.B;
-        case RegC: return ctx.regs.C;
-        case RegD: return ctx.regs.D;
-        case RegE: return ctx.regs.E;
-        case RegH: return ctx.regs.H;
-        case RegL: return ctx.regs.L;
+u16 cpu_read_reg(reg_type rt) {
+    switch(rt) {
+        case RT_A: return ctx.regs.a;
+        case RT_F: return ctx.regs.f;
+        case RT_B: return ctx.regs.b;
+        case RT_C: return ctx.regs.c;
+        case RT_D: return ctx.regs.d;
+        case RT_E: return ctx.regs.e;
+        case RT_H: return ctx.regs.h;
+        case RT_L: return ctx.regs.l;
 
-        case RegAF: return reverse(*((uint16_t *)&ctx.regs.A));
-        case RegBC: return reverse(*((uint16_t *)&ctx.regs.B));
-        case RegDE: return reverse(*((uint16_t *)&ctx.regs.D));
-        case RegHL: return reverse(*((uint16_t *)&ctx.regs.H));
+        case RT_AF: return reverse(*((u16 *)&ctx.regs.a));
+        case RT_BC: return reverse(*((u16 *)&ctx.regs.b));
+        case RT_DE: return reverse(*((u16 *)&ctx.regs.d));
+        case RT_HL: return reverse(*((u16 *)&ctx.regs.h));
 
-        case RegPC: return ctx.regs.PC;
-        case RegSP: return ctx.regs.SP;
+        case RT_PC: return ctx.regs.pc;
+        case RT_SP: return ctx.regs.sp;
         default: return 0;
     }
 }
 
-void cpuSetReg(registerType rt, uint16_t value) {
-    switch (rt) {
-        case RegA: ctx.regs.A = value & 0xFF; break;
-        case RegF: ctx.regs.F = value & 0xFF; break;
-        case RegB: ctx.regs.B = value & 0xFF; break;
-        case RegC: {
-            ctx.regs.C = value & 0xFF;
+void cpu_set_reg(reg_type rt, u16 val) {
+    switch(rt) {
+        case RT_A: ctx.regs.a = val & 0xFF; break;
+        case RT_F: ctx.regs.f = val & 0xFF; break;
+        case RT_B: ctx.regs.b = val & 0xFF; break;
+        case RT_C: {
+             ctx.regs.c = val & 0xFF;
         } break;
-        case RegD: ctx.regs.D = value & 0xFF; break;
-        case RegE: ctx.regs.E = value & 0xFF; break;
-        case RegH: ctx.regs.H = value & 0xFF; break;
-        case RegL: ctx.regs.L = value & 0xFF; break;
+        case RT_D: ctx.regs.d = val & 0xFF; break;
+        case RT_E: ctx.regs.e = val & 0xFF; break;
+        case RT_H: ctx.regs.h = val & 0xFF; break;
+        case RT_L: ctx.regs.l = val & 0xFF; break;
 
-        case RegAF: *((uint16_t *)&ctx.regs.A) = reverse(value); break;
-        case RegBC: *((uint16_t *)&ctx.regs.B) = reverse(value); break;
-        case RegDE: *((uint16_t *)&ctx.regs.D) = reverse(value); break;
-        case RegHL: {
-            *((uint16_t *)&ctx.regs.H) = reverse(value);
-            break;
+        case RT_AF: *((u16 *)&ctx.regs.a) = reverse(val); break;
+        case RT_BC: *((u16 *)&ctx.regs.b) = reverse(val); break;
+        case RT_DE: *((u16 *)&ctx.regs.d) = reverse(val); break;
+        case RT_HL: {
+         *((u16 *)&ctx.regs.h) = reverse(val);
+         break;
         }
 
-        case RegPC: ctx.regs.PC = value; break;
-        case RegSP: ctx.regs.SP = value; break;
-        case NONE: break;
+        case RT_PC: ctx.regs.pc = val; break;
+        case RT_SP: ctx.regs.sp = val; break;
+        case RT_NONE: break;
     }
 }
 
 
-uint8_t cpuReadReg8(registerType rt) {
+u8 cpu_read_reg8(reg_type rt) {
     switch(rt) {
-        case RegA: return ctx.regs.A;
-        case RegF: return ctx.regs.F;
-        case RegB: return ctx.regs.B;
-        case RegC: return ctx.regs.C;
-        case RegD: return ctx.regs.D;
-        case RegE: return ctx.regs.E;
-        case RegH: return ctx.regs.H;
-        case RegL: return ctx.regs.L;
-        case RegHL: {
-            return busRead(cpuReadReg(RegHL));
+        case RT_A: return ctx.regs.a;
+        case RT_F: return ctx.regs.f;
+        case RT_B: return ctx.regs.b;
+        case RT_C: return ctx.regs.c;
+        case RT_D: return ctx.regs.d;
+        case RT_E: return ctx.regs.e;
+        case RT_H: return ctx.regs.h;
+        case RT_L: return ctx.regs.l;
+        case RT_HL: {
+            return bus_read(cpu_read_reg(RT_HL));
         }
         default:
             printf("**ERR INVALID REG8: %d\n", rt);
-            NOIMPL
+            NO_IMPL
     }
 }
 
-void cpuSetReg8(registerType rt, uint8_t value) {
+void cpu_set_reg8(reg_type rt, u8 val) {
     switch(rt) {
-        case RegA: ctx.regs.A = value & 0xFF; break;
-        case RegF: ctx.regs.F = value & 0xFF; break;
-        case RegB: ctx.regs.B = value & 0xFF; break;
-        case RegC: ctx.regs.C = value & 0xFF; break;
-        case RegD: ctx.regs.D = value & 0xFF; break;
-        case RegE: ctx.regs.E = value & 0xFF; break;
-        case RegH: ctx.regs.H = value & 0xFF; break;
-        case RegL: ctx.regs.L = value & 0xFF; break;
-        case RegHL: busWrite(cpuReadReg(RegHL), value); break;
+        case RT_A: ctx.regs.a = val & 0xFF; break;
+        case RT_F: ctx.regs.f = val & 0xFF; break;
+        case RT_B: ctx.regs.b = val & 0xFF; break;
+        case RT_C: ctx.regs.c = val & 0xFF; break;
+        case RT_D: ctx.regs.d = val & 0xFF; break;
+        case RT_E: ctx.regs.e = val & 0xFF; break;
+        case RT_H: ctx.regs.h = val & 0xFF; break;
+        case RT_L: ctx.regs.l = val & 0xFF; break;
+        case RT_HL: bus_write(cpu_read_reg(RT_HL), val); break;
         default:
             printf("**ERR INVALID REG8: %d\n", rt);
-            NOIMPL
+            NO_IMPL
     }
 }
 
-CPURegisters *cpuGetRegisters() {
+cpu_registers *cpu_get_regs() {
     return &ctx.regs;
 }
 
-uint8_t cpuGetInterruptFlags() {
-    return ctx.interruptFlags;
+u8 cpu_get_int_flags() {
+    return ctx.int_flags;
 }
 
-void cpuSetInterruptFlags(uint8_t value) {
-    ctx.interruptFlags = value;
+void cpu_set_int_flags(u8 value) {
+    ctx.int_flags = value;
 }

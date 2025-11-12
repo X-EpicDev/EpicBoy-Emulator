@@ -1,61 +1,61 @@
 #include "../inc/io.h"
-#include "../inc/timer.h"
-#include "../inc/cpu.h"
 #include "../inc/dma.h"
 #include "../inc/lcd.h"
+#include "../inc/timer.h"
+#include "../inc/cpu.h"
 
-static char SerialData[2];
+static char serial_data[2];
 
-uint8_t ioRead(uint16_t address) {
+u8 io_read(u16 address) {
     if (address == 0xFF01) {
-        return SerialData[0];
+        return serial_data[0];
     }
 
     if (address == 0xFF02) {
-        return SerialData[1];
+        return serial_data[1];
     }
 
     if (BETWEEN(address, 0xFF04, 0xFF07)) {
-        return timerRead(address);
+        return timer_read(address);
     }
 
     if (address == 0xFF0F) {
-        return cpuGetInterruptFlags();
+        return cpu_get_int_flags();
     }
 
     if (BETWEEN(address, 0xFF40, 0xFF4B)) {
-        return lcdRead(address);
+        return lcd_read(address);
     }
 
-    printf("Unsupported Bus Read attempted at 0x%04X\n", address);
+    printf("UNSUPPORTED bus_read(%04X)\n", address);
     return 0;
 }
 
-void ioWrite(uint16_t address, uint8_t value) {
+void io_write(u16 address, u8 value) {
     if (address == 0xFF01) {
-        SerialData[0] = value;
+        serial_data[0] = value;
         return;
     }
 
     if (address == 0xFF02) {
-        SerialData[1] = value;
+        serial_data[1] = value;
         return;
     }
 
     if (BETWEEN(address, 0xFF04, 0xFF07)) {
-        timerWrite(address, value);
+        timer_write(address, value);
         return;
     }
 
     if (address == 0xFF0F) {
-        cpuSetInterruptFlags(value);
+        cpu_set_int_flags(value);
         return;
     }
 
     if (BETWEEN(address, 0xFF40, 0xFF4B)) {
-        lcdWrite(address, value);
+        lcd_write(address, value);
         return;
     }
 
-    printf("Unsupported Bus Write attempted at 0x%04X with value 0x%02X (NOT IMPLEMENTED)\n", address, value);
+    printf("UNSUPPORTED bus_write(%04X)\n", address);
 }

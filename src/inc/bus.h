@@ -3,10 +3,11 @@
 
 #include "common.h"
 
-uint8_t busRead(uint16_t address);
-void busWrite(uint16_t address, uint8_t value);
+u8 bus_read(u16 address);
+void bus_write(u16 address, u8 value);
 
-uint16_t busRead16(uint16_t address);
-void busWrite16(uint16_t address, uint16_t value);
+
+u16 bus_read16(u16 address);
+void bus_write16(u16 address, u16 value);
 
 #endif //BUS_H

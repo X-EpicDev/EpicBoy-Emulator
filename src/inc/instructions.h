@@ -5,123 +5,114 @@
 
 //Address Modes
 typedef enum {
-    IMPL,       //Implied Address Mode (Does Nothing)
-    REG_D16,    //Loads 16Bit Immediate Value Into Register
-    REG_REG,    //Loads Data From 1 Register Into Another
-    MEMREG_REG, //Loads Data From A Register Into Memory
-    REG,        //Used In Single Register Operations
-    REG_D8,     //Loads 8Bit Immediate Value Into Register
-    REG_MEMREG, //Loads Data From Memory Into A Register
-    REG_HLI,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Increments After
-    REG_HLD,    //Loads Data From Memory Address HL Is Pointing To Into A Register - Decrements After
-    HLI_REG,    //Loads Data From Register Into A Memory Address That HL Is Pointing To - Increments After
-    HLD_REG,    //Loads Data From Register Into A Memory Address That HL Is Pointing To - Decrements After
-    REG_A8,     //Loads An Immediate Memory Address Into A Register
-    A8_REG,     //Loads A Register into an Immediate Memory Address
-    HL_SPR,     //Uses HL As a Pointer To Sprite Memory
-    D16,        //16Bit Immediate Value
-    D8,         //8Bit Immediate Value
-    D16_REG,    //Loads A Register Into A 16Bit Memory Address
-    MEMREG_D8,  //Loads An Immediate Memory Address With 8Bit Data From A Register
-    MEMREG,     //Memory Address
-    A16_REG,    //Loads A Memory Address With An Immediate Memory Address
-    REG_A16,    //Loads Register With 16Bit Immediate Memory Address
-} addressMode;
+    AM_IMP,
+    AM_R_D16,
+    AM_R_R,
+    AM_MR_R,
+    AM_R,
+    AM_R_D8,
+    AM_R_MR,
+    AM_R_HLI,
+    AM_R_HLD,
+    AM_HLI_R,
+    AM_HLD_R,
+    AM_R_A8,
+    AM_A8_R,
+    AM_HL_SPR,
+    AM_D16,
+    AM_D8,
+    AM_D16_R,
+    AM_MR_D8,
+    AM_MR,
+    AM_A16_R,
+    AM_R_A16
+} addr_mode;
 
-//Register Types
 typedef enum {
-    RegNone, //NULL Register
-    RegA,    //Register A
-    RegF,    //Register F
-    RegB,    //Register B
-    RegC,    //Register C
-    RegD,    //Register D
-    RegE,    //Register E
-    RegH,    //Register H
-    RegL,    //Register L
-    RegAF,   //Registers A and F Together
-    RegBC,   //Registers B and C Together
-    RegDE,   //Registers D and E Together
-    RegHL,   //Registers H and L Together
-    RegSP,   //Stack Pointer
-    RegPC    //Program Counter
-} registerType;
+    RT_NONE,
+    RT_A,
+    RT_F,
+    RT_B,
+    RT_C,
+    RT_D,
+    RT_E,
+    RT_H,
+    RT_L,
+    RT_AF,
+    RT_BC,
+    RT_DE,
+    RT_HL,
+    RT_SP,
+    RT_PC
+} reg_type;
 
-//Instruction Types
 typedef enum {
-    NONE,   //Ignore - This Is Not An ASM Instruction
-    NOP,    //Does Nothing - (1 CPU Cycle)
-    LD,     //Loads Values In Memory And Registers (and Between) - (1-7 CPU Cycles)
-    INC,    //Increments Register or Address By 1 - (1-6 CPU Cycles)
-    DEC,    //Decrements Register or Address By 1 - (1-6 CPU Cycles)
-    RLCA,   //Rotates Contents Of Register Left Through Carry Flag - (4 CPU Cycles)
-    ADD,    //Adds The Contents Of Register To Another - (1-4 CPU Cycles)
-    RRCA,   //Rotates Contents Of Register Right Through Carry Flag - (4 CPU Cycles)
-    STOP,   //Halts CPU Execution Until Reboot (4 CPU Cycles)
-    RLA,    //Rotates Contents Of Register Left Through Carry Flag, Affecting The Carry Flag - (4 CPU Cycles)
-    JR,     //Jump To Specific Address - (3 CPU Cycles)
-    RRA,    //Rotates Contents Of Register Right Through Carry Flag, Affecting The Carry Flag - (4 CPU Cycles)
-    DAA,    //Adjusts Register After a BCD (Binary-Coded Decimal) Operation To Ensure The Result Is Valid - (4 CPU Cycles)
-    CPL,    //Flips All Bits In Register - (4 CPU Cycles)
-    SCF,    //Set Carry Flag To 1, Does Not Affect Any Other Flags - (4 CPU Cycles)
-    CCF,    //Toggles Carry Flag - (4 CPU Cycles)
-    HALT,   //Halts CPU Execution Until Reboot - (4 CPU Cycles)
-    ADC,    //Adds Value + Carry Flag To Register - (1-4 CPU Cycles)
-    SUB,    //Subtracts A Value From A Register - (1-4 CPU Cycles)
-    SBC,    //Subtracts Value + Carry Flag To Register - (1-4 CPU Cycles)
-    AND,    //Performs Bitwise AND Operation Between 2 Values - (1-4 CPU Cycles)
-    XOR,    //Performs Bitwise XOR Operation Between 2 Values - (1-4 CPU Cycles)
-    OR,     //Performs Bitwise OR Operation Between 2 Values - (1-4 CPU Cycles)
-    CP,     //Compares 2 Register Values - (1-4 CPU Cycles)
-    POP,    //Pops A 2 Byte Value From Stack Into 2 Registers - (3-5 CPU Cycles)
-    JP,     //Jumps To Any Specified Address - (3-10 CPU Cycles)
-    PUSH,   //Pushes 2 Byte Value From 2 Registers Onto The Stack - (4-6 CPU Cycles)
-    RET,    //Return From Subroutine Than Pops Return Function From Stack - (3 CPU Cycles)
-    CB,     //Prefixed Instructions - See Below For CB Instructions
-    CALL,   //Calls A Subroutine And Pushes Return Address Onto Stack, Then Jumps To Specified Address - (6 CPU Cycles)
-    RETI,   //Returns Interrupt Service Routine And Enables Interrupts - (5 CPU Cycles)
-    LDH,    //Loads Data Between Register And Memory Address Om High Memory Range (0xFF00-0xFFFF) - (3-4 CPU Cycles)
-    JPHL,   //Jumps To Address in Register HL - (4 CPU Cycles)
-    DI,     //Disables Interrupts Preventing Them From Happening - (4 CPU Cycles)
-    EI,     //Enables Interrupts Allowing Them To Occur - (4 CPU Cycles)
-    RST,    //Jumps To Predefined Address And Pushes Return Address Onto Stack
-    ERR,    //ERROR
+    IN_NONE,
+    IN_NOP,
+    IN_LD,
+    IN_INC,
+    IN_DEC,
+    IN_RLCA,
+    IN_ADD,
+    IN_RRCA,
+    IN_STOP,
+    IN_RLA,
+    IN_JR,
+    IN_RRA,
+    IN_DAA,
+    IN_CPL,
+    IN_SCF,
+    IN_CCF,
+    IN_HALT,
+    IN_ADC,
+    IN_SUB,
+    IN_SBC,
+    IN_AND,
+    IN_XOR,
+    IN_OR,
+    IN_CP,
+    IN_POP,
+    IN_JP,
+    IN_PUSH,
+    IN_RET,
+    IN_CB,
+    IN_CALL,
+    IN_RETI,
+    IN_LDH,
+    IN_JPHL,
+    IN_DI,
+    IN_EI,
+    IN_RST,
+    IN_ERR,
+    //CB instructions
+    IN_RLC,
+    IN_RRC,
+    IN_RL,
+    IN_RR,
+    IN_SLA,
+    IN_SRA,
+    IN_SWAP,
+    IN_SRL,
+    IN_BIT,
+    IN_RES,
+    IN_SET
+} in_type;
 
-    //CB OPCODE Instructions - All Instructions Take 4 CPU Cycles
-    RLC,    //Rotates Register Left Through Carry Flag
-    RRC,    //Rotates Register Right Through Carry Flag
-    RL,     //Rotates Register Left Through Carry Flag Without Modifying It
-    RR,     //Rotates Register Right Through Carry Flag Without Modifying It
-    SLA,    //Shifts Register Left, Setting The Carry Flag
-    SRA,    //Shifts Register Right, Setting The Carry Flag
-    SWAP,   //Swaps High And Low Nibbles Of A Register
-    SRL,    //Shifts Register Right, Filling High Bits With 0s
-    BIT,    //Tests A Bit In A Register And Updates Any Flags Accordingly
-    RES,    //Clears A Bit In A Register
-    SET,    //Sets A Bit In A Register
-} instructionType;
-
-//Condition Types
 typedef enum {
-    ConditionNone,  //NO CONDITION
-    ConditionNZ,    //IF ZERO FLAG  = FALSE
-    ConditionZ,     //IF ZERO FLAG  = TRUE
-    ConditionNC,    //IF CARRY FLAG = FALSE
-    ConditionC      //IF CARRY FLAG = TRUE
-} conditionType;
+    CT_NONE, CT_NZ, CT_Z, CT_NC, CT_C
+} cond_type;
 
-//Instruction Data
 typedef struct {
-    instructionType type;
-    addressMode mode;
-    registerType reg1;
-    registerType reg2;
-    conditionType condition;
-    uint8_t parameter;
+    in_type type;
+    addr_mode mode;
+    reg_type reg_1;
+    reg_type reg_2;
+    cond_type cond;
+    u8 param;
 } instruction;
 
-instruction *instructionByOpCode(uint8_t opcode);
+instruction *instruction_by_opcode(u8 opcode);
 
-char *instructionName(instructionType type);
+char *inst_name(in_type t);
 
 #endif //INSTRUCTS_H

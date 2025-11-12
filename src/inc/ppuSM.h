@@ -3,9 +3,9 @@
 
 #include "common.h"
 
-void ppuModeOAM();
-void ppuModeXFER();
-void ppuModeVBLANK();
-void ppuModeHBLANK();
+void ppu_mode_oam();
+void ppu_mode_xfer();
+void ppu_mode_vblank();
+void ppu_mode_hblank();
 
 #endif //PPUSM_H

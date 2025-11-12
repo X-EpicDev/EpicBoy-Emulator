@@ -4,18 +4,18 @@
 #include "common.h"
 
 typedef struct {
-    uint16_t div;
-    uint8_t tima;
-    uint8_t tma;
-    uint8_t tac;
-} timerContext;
+    u16 div;
+    u8 tima;
+    u8 tma;
+    u8 tac;
+} timer_context;
 
-void timerInit();
-void timerTick();
+void timer_init();
+void timer_tick();
 
-void timerWrite(uint16_t address, uint8_t value);
-uint8_t timerRead(uint16_t address);
+void timer_write(u16 address, u8 value);
+u8 timer_read(u16 address);
 
-timerContext *timerGetContext();
+timer_context *timer_get_context();
 
 #endif //TIMER_H

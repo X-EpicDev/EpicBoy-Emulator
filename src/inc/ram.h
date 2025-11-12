@@ -3,10 +3,10 @@
 
 #include "common.h"
 
-uint8_t wramRead(uint16_t address);
-void wramWrite(uint16_t address, uint8_t data);
+u8 wram_read(u16 address);
+void wram_write(u16 address, u8 value);
 
-uint8_t hramRead(uint16_t address);
-void hramWrite(uint16_t address, uint8_t data);
+u8 hram_read(u16 address);
+void hram_write(u16 address, u8 value);
 
 #endif //RAM_H

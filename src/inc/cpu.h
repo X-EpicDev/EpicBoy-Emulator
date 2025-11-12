@@ -5,64 +5,64 @@
 #include "instructions.h"
 
 typedef struct {
-    uint8_t A;
-    uint8_t F;
-    uint8_t B;
-    uint8_t C;
-    uint8_t D;
-    uint8_t E;
-    uint8_t H;
-    uint8_t L;
-    uint16_t PC;
-    uint16_t SP;
-} CPURegisters;
+    u8 a;
+    u8 f;
+    u8 b;
+    u8 c;
+    u8 d;
+    u8 e;
+    u8 h;
+    u8 l;
+    u16 pc;
+    u16 sp;
+} cpu_registers;
 
 typedef struct {
-    CPURegisters regs;
+    cpu_registers regs;
 
-    //currently fetched data
-    uint16_t fetchedData;
-    uint16_t memoryDestination;
-    bool destinationIsMemory;
-    uint8_t currentOPCode;
-    instruction *currentInstruction;
+    //current fetch...
+    u16 fetched_data;
+    u16 mem_dest;
+    bool dest_is_mem;
+    u8 cur_opcode;
+    instruction *cur_inst;
 
     bool halted;
     bool stepping;
 
-    bool interruptMasterEnabled;
-    bool enablingIME;
-    uint8_t interruptEnableRegister;
-    uint8_t interruptFlags;
+    bool int_master_enabled;
+    bool enabling_ime;
+    u8 ie_register;
+    u8 int_flags;
 
-} CPUContext;
+} cpu_context;
 
-CPURegisters *cpuGetRegisters();
+cpu_registers *cpu_get_regs();
 
-void cpuInit();
-bool cpuStep();
+void cpu_init();
+bool cpu_step();
 
-typedef void (*InstructionProcess)(CPUContext *);
+typedef void (*IN_PROC)(cpu_context *);
 
-InstructionProcess instructionGetProcessor(instructionType type);
+IN_PROC inst_get_processor(in_type type);
 
-#define CPUFLAGZ BIT(ctx->regs.F, 7)
-#define CPUFLAGN BIT(ctx->regs.F, 6)
-#define CPUFLAGH BIT(ctx->regs.F, 5)
-#define CPUFLAGC BIT(ctx->regs.F, 4)
+#define CPU_FLAG_Z BIT(ctx->regs.f, 7)
+#define CPU_FLAG_N BIT(ctx->regs.f, 6)
+#define CPU_FLAG_H BIT(ctx->regs.f, 5)
+#define CPU_FLAG_C BIT(ctx->regs.f, 4)
 
-uint16_t cpuReadReg(registerType rt);
-void cpuSetReg(registerType rt, uint16_t value);
+u16 cpu_read_reg(reg_type rt);
+void cpu_set_reg(reg_type rt, u16 val);
 
-uint8_t cpuGetInterruptReg();
-void cpuSetInterruptRegister(uint8_t n);
+u8 cpu_get_ie_register();
+void cpu_set_ie_register(u8 n);
 
-uint8_t cpuReadReg8(registerType rt);
-void cpuSetReg8(registerType rt, uint8_t value);
+u8 cpu_read_reg8(reg_type rt);
+void cpu_set_reg8(reg_type rt, u8 val);
 
-uint8_t cpuGetInterruptFlags();
-void cpuSetInterruptFlags(uint8_t value);
+u8 cpu_get_int_flags();
+void cpu_set_int_flags(u8 value);
 
-void instructionToString(CPUContext *ctx, char *str);
+void inst_to_str(cpu_context *ctx, char *str);
 
 #endif //CPU_H

@@ -1,78 +1,78 @@
 #include "../inc/ppu.h"
 #include "../inc/lcd.h"
-#include "../inc/ppuSM.h"
 #include <string.h>
+#include "../inc/ppuSM.h"
 
-void pipelineFifoReset();
-void pipelineProcess();
+void pipeline_fifo_reset();
+void pipeline_process();
 
-static ppuContext ctx;
+static ppu_context ctx;
 
-ppuContext *ppuGetContext() {
+ppu_context *ppu_get_context() {
     return &ctx;
 }
 
-void ppuInit() {
-    ctx.currentFrame = 0;
-    ctx.lineTicks = 0;
-    ctx.videoBuffer = malloc(yResolution * xResolution * sizeof(32));
+void ppu_init() {
+    ctx.current_frame = 0;
+    ctx.line_ticks = 0;
+    ctx.video_buffer = malloc(YRES * XRES * sizeof(32));
 
-    //pipeline
-    ctx.pfc.lineX = 0;
-    ctx.pfc.pushedX = 0;
-    ctx.pfc.fetchX = 0;
-    ctx.pfc.pixelFifo.size = 0;
-    ctx.pfc.pixelFifo.head = ctx.pfc.pixelFifo.tail = NULL;
-    ctx.pfc.currentFetchState = FS_TILE;
+    ctx.pfc.line_x = 0;
+    ctx.pfc.pushed_x = 0;
+    ctx.pfc.fetch_x = 0;
+    ctx.pfc.pixel_fifo.size = 0;
+    ctx.pfc.pixel_fifo.head = ctx.pfc.pixel_fifo.tail = NULL;
+    ctx.pfc.cur_fetch_state = FS_TILE;
 
-    lcdInit();
+    lcd_init();
     LCDS_MODE_SET(MODE_OAM);
 
-    memset(ctx.oamRam, 0, sizeof(ctx.oamRam));
-    memset(ctx.videoBuffer, 0, yResolution * xResolution * sizeof(uint32_t));
+    memset(ctx.oam_ram, 0, sizeof(ctx.oam_ram));
+    memset(ctx.video_buffer, 0, YRES * XRES * sizeof(u32));
 }
 
-void ppuTick() {
-    ctx.lineTicks++;
+void ppu_tick() {
+    ctx.line_ticks++;
 
-    switch (LCDS_MODE) {
+    switch(LCDS_MODE) {
         case MODE_OAM:
-            ppuModeOAM();
+            ppu_mode_oam();
             break;
         case MODE_XFER:
-            ppuModeXFER();
+            ppu_mode_xfer();
             break;
         case MODE_VBLANK:
-            ppuModeVBLANK();
+            ppu_mode_vblank();
             break;
         case MODE_HBLANK:
-            ppuModeHBLANK();
+            ppu_mode_hblank();
             break;
     }
 }
 
-void ppuOamWrite(uint16_t address, uint8_t value) {
+
+void ppu_oam_write(u16 address, u8 value) {
     if (address >= 0xFE00) {
         address -= 0xFE00;
     }
 
-    uint8_t *p = (uint8_t *)ctx.oamRam;
+    u8 *p = (u8 *)ctx.oam_ram;
     p[address] = value;
 }
 
-uint8_t ppuOamRead(uint16_t address) {
+u8 ppu_oam_read(u16 address) {
     if (address >= 0xFE00) {
         address -= 0xFE00;
     }
 
-    uint8_t *p = (uint8_t *)ctx.oamRam;
+    u8 *p = (u8 *)ctx.oam_ram;
     return p[address];
 }
 
-void ppuVramWrite(uint16_t address, uint8_t value) {
+void ppu_vram_write(u16 address, u8 value) {
     ctx.vram[address - 0x8000] = value;
 }
 
-uint8_t ppuVramRead(uint16_t address) {
+u8 ppu_vram_read(u16 address) {
     return ctx.vram[address - 0x8000];
 }

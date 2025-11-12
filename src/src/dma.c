@@ -4,37 +4,37 @@
 
 typedef struct {
     bool active;
-    uint8_t byte;
-    uint8_t value;
-    uint8_t startDelay;
-} dmaContext;
+    u8 byte;
+    u8 value;
+    u8 start_delay;
+} dma_context;
 
-static dmaContext ctx;
+static dma_context ctx;
 
-void dmaStart(uint8_t start) {
+void dma_start(u8 start) {
     ctx.active = true;
     ctx.byte = 0;
-    ctx.startDelay = 2;
+    ctx.start_delay = 2;
     ctx.value = start;
 }
 
-void dmaTick() {
+void dma_tick() {
     if (!ctx.active) {
         return;
     }
 
-    if (ctx.startDelay) {
-        ctx.startDelay--;
+    if (ctx.start_delay) {
+        ctx.start_delay--;
         return;
     }
 
-    ppuOamWrite(ctx.byte, busRead((ctx.value * 0x100) + ctx.byte));
+    ppu_oam_write(ctx.byte, bus_read((ctx.value * 0x100) + ctx.byte));
 
     ctx.byte++;
 
     ctx.active = ctx.byte < 0xA0;
 }
 
-bool dmaTransferring() {
+bool dma_transferring() {
     return ctx.active;
 }

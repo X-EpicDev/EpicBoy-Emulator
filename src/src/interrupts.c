@@ -2,17 +2,17 @@
 #include "../inc/stack.h"
 #include "../inc/interrupts.h"
 
-void interruptHandle(CPUContext *ctx, uint16_t address) {
-    stackPush16(ctx->regs.PC);
-    ctx->regs.PC = address;
+void int_handle(cpu_context *ctx, u16 address) {
+    stack_push16(ctx->regs.pc);
+    ctx->regs.pc = address;
 }
 
-bool interruptCheck(CPUContext *ctx, uint16_t address, interruptType it) {
-    if (ctx->interruptFlags & it && ctx->interruptEnableRegister & it) {
-        interruptHandle(ctx, address);
-        ctx->interruptFlags &= ~it;
+bool int_check(cpu_context *ctx, u16 address, interrupt_type it) {
+    if (ctx->int_flags & it && ctx->ie_register & it) {
+        int_handle(ctx, address);
+        ctx->int_flags &= ~it;
         ctx->halted = false;
-        ctx->interruptMasterEnabled = false;
+        ctx->int_master_enabled = false;
 
         return true;
     }
@@ -20,16 +20,16 @@ bool interruptCheck(CPUContext *ctx, uint16_t address, interruptType it) {
     return false;
 }
 
-void cpuHandleInterrupts(CPUContext *ctx) {
-    if (interruptCheck(ctx, 0x40, Interrupt_VBLANK)) {
+void cpu_handle_interrupts(cpu_context *ctx) {
+    if (int_check(ctx, 0x40, IT_VBLANK)) {
 
-    } else if (interruptCheck(ctx, 0x48, Interrupt_LCDSTAT)) {
+    } else if (int_check(ctx, 0x48, IT_LCD_STAT)) {
 
-    } else if (interruptCheck(ctx, 0x50, Interrupt_TIMER)) {
+    } else if (int_check(ctx, 0x50, IT_TIMER)) {
 
-    }  else if (interruptCheck(ctx, 0x58, Interrupt_SERIAL)) {
+    }  else if (int_check(ctx, 0x58, IT_SERIAL)) {
 
-    }  else if (interruptCheck(ctx, 0x60, Interrupt_JOYPAD)) {
+    }  else if (int_check(ctx, 0x60, IT_JOYPAD)) {
 
     }
 }

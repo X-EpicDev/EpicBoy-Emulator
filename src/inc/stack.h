@@ -3,10 +3,10 @@
 
 #include "common.h"
 
-void stackPush(uint8_t data);
-void stackPush16(uint16_t data);
+void stack_push(u8 data);
+void stack_push16(u16 data);
 
-uint8_t stackPop();
-uint16_t stackPop16();
+u8 stack_pop();
+u16 stack_pop16();
 
 #endif //STACK_H

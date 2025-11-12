@@ -2,102 +2,102 @@
 #include "../inc/lcd.h"
 #include "../inc/bus.h"
 
-void pixelFifoPush(uint32_t value) {
+void pixel_fifo_push(u32 value) {
     fifo_entry *next = malloc(sizeof(fifo_entry));
     next->next = NULL;
     next->value = value;
 
-    if (!ppuGetContext()->pfc.pixelFifo.head) {
-        //first entry
-        ppuGetContext()->pfc.pixelFifo.head = ppuGetContext()->pfc.pixelFifo.tail = next;
+    if (!ppu_get_context()->pfc.pixel_fifo.head) {
+        //first entry...
+        ppu_get_context()->pfc.pixel_fifo.head = ppu_get_context()->pfc.pixel_fifo.tail = next;
     } else {
-        ppuGetContext()->pfc.pixelFifo.tail->next = next;
-        ppuGetContext()->pfc.pixelFifo.tail = next;
+        ppu_get_context()->pfc.pixel_fifo.tail->next = next;
+        ppu_get_context()->pfc.pixel_fifo.tail = next;
     }
 
-    ppuGetContext()->pfc.pixelFifo.size++;
+    ppu_get_context()->pfc.pixel_fifo.size++;
 }
 
-uint32_t pixelFifoPop() {
-    if (ppuGetContext()->pfc.pixelFifo.size <= 0) {
+u32 pixel_fifo_pop() {
+    if (ppu_get_context()->pfc.pixel_fifo.size <= 0) {
         fprintf(stderr, "ERR IN PIXEL FIFO!\n");
         exit(-8);
     }
 
-    fifo_entry *popped = ppuGetContext()->pfc.pixelFifo.head;
-    ppuGetContext()->pfc.pixelFifo.head = popped->next;
-    ppuGetContext()->pfc.pixelFifo.size--;
+    fifo_entry *popped = ppu_get_context()->pfc.pixel_fifo.head;
+    ppu_get_context()->pfc.pixel_fifo.head = popped->next;
+    ppu_get_context()->pfc.pixel_fifo.size--;
 
-    uint32_t value = popped->value;
+    u32 val = popped->value;
     free(popped);
 
-    return value;
+    return val;
 }
 
-bool pipelineFifoAdd() {
-    if (ppuGetContext()->pfc.pixelFifo.size > 8) {
-        //FIFO IS FULL
+bool pipeline_fifo_add() {
+    if (ppu_get_context()->pfc.pixel_fifo.size > 8) {
+        //fifo is full!
         return false;
     }
 
-    int x = ppuGetContext()->pfc.fetchX - (8 - (lcdGetContext()->scrollX % 8));
+    int x = ppu_get_context()->pfc.fetch_x - (8 - (lcd_get_context()->scroll_x % 8));
 
-    for (int i = 0; i < 8; i++) {
+    for (int i=0; i<8; i++) {
         int bit = 7 - i;
-        uint8_t hi = !!(ppuGetContext()->pfc.bgwFetchData[1] & (1 << bit));
-        uint8_t lo = !!(ppuGetContext()->pfc.bgwFetchData[2] & (1 << bit)) << 1;
-        uint32_t colour = lcdGetContext()->bgColours[hi | lo];
+        u8 hi = !!(ppu_get_context()->pfc.bgw_fetch_data[1] & (1 << bit));
+        u8 lo = !!(ppu_get_context()->pfc.bgw_fetch_data[2] & (1 << bit)) << 1;
+        u32 color = lcd_get_context()->bg_colors[hi | lo];
 
         if (x >= 0) {
-            pixelFifoPush(colour);
-            ppuGetContext()->pfc.fifoX++;
+            pixel_fifo_push(color);
+            ppu_get_context()->pfc.fifo_x++;
         }
     }
 
     return true;
 }
 
-void pipelineFetch() {
-    switch (ppuGetContext()->pfc.currentFetchState) {
+void pipeline_fetch() {
+    switch(ppu_get_context()->pfc.cur_fetch_state) {
         case FS_TILE: {
             if (LCDC_BGW_ENABLE) {
-                ppuGetContext()->pfc.bgwFetchData[0] = busRead(LCDC_BG_MAP_AREA +
-                    (ppuGetContext()->pfc.mapX/8) +
-                    (((ppuGetContext()->pfc.mapY/8)) * 32));
+                ppu_get_context()->pfc.bgw_fetch_data[0] = bus_read(LCDC_BG_MAP_AREA +
+                    (ppu_get_context()->pfc.map_x / 8) +
+                    (((ppu_get_context()->pfc.map_y / 8)) * 32));
 
                 if (LCDC_BGW_DATA_AREA == 0x8800) {
-                    ppuGetContext()->pfc.bgwFetchData[0] += 128;
+                    ppu_get_context()->pfc.bgw_fetch_data[0] += 128;
                 }
             }
 
-            ppuGetContext()->pfc.currentFetchState = FS_DATA0;
-            ppuGetContext()->pfc.fetchX += 8;
+            ppu_get_context()->pfc.cur_fetch_state = FS_DATA0;
+            ppu_get_context()->pfc.fetch_x += 8;
         } break;
 
         case FS_DATA0: {
-            ppuGetContext()->pfc.bgwFetchData[1] = busRead(LCDC_BGW_DATA_AREA +
-                (ppuGetContext()->pfc.bgwFetchData[0] * 16) +
-                ppuGetContext()->pfc.tileY);
+            ppu_get_context()->pfc.bgw_fetch_data[1] = bus_read(LCDC_BGW_DATA_AREA +
+                (ppu_get_context()->pfc.bgw_fetch_data[0] * 16) +
+                ppu_get_context()->pfc.tile_y);
 
-            ppuGetContext()->pfc.currentFetchState = FS_DATA1;
+            ppu_get_context()->pfc.cur_fetch_state = FS_DATA1;
         } break;
 
         case FS_DATA1: {
-            ppuGetContext()->pfc.bgwFetchData[2] = busRead(LCDC_BGW_DATA_AREA +
-                (ppuGetContext()->pfc.bgwFetchData[0] * 16) +
-                ppuGetContext()->pfc.tileY + 1);
+            ppu_get_context()->pfc.bgw_fetch_data[2] = bus_read(LCDC_BGW_DATA_AREA +
+                (ppu_get_context()->pfc.bgw_fetch_data[0] * 16) +
+                ppu_get_context()->pfc.tile_y + 1);
 
-            ppuGetContext()->pfc.currentFetchState = FS_IDLE;
+            ppu_get_context()->pfc.cur_fetch_state = FS_IDLE;
 
         } break;
 
         case FS_IDLE: {
-            ppuGetContext()->pfc.currentFetchState = FS_PUSH;
+            ppu_get_context()->pfc.cur_fetch_state = FS_PUSH;
         } break;
 
         case FS_PUSH: {
-            if (pipelineFifoAdd()) {
-                ppuGetContext()->pfc.currentFetchState = FS_TILE;
+            if (pipeline_fifo_add()) {
+                ppu_get_context()->pfc.cur_fetch_state = FS_TILE;
             }
 
         } break;
@@ -105,37 +105,37 @@ void pipelineFetch() {
     }
 }
 
-void pipelinePushPixel() {
-    if (ppuGetContext()->pfc.pixelFifo.size > 8) {
-        uint32_t pixelData = pixelFifoPop();
+void pipeline_push_pixel() {
+    if (ppu_get_context()->pfc.pixel_fifo.size > 8) {
+        u32 pixel_data = pixel_fifo_pop();
 
-        if (ppuGetContext()->pfc.lineX >= (lcdGetContext()->scrollX % 8)) {
-            ppuGetContext()->videoBuffer[ppuGetContext()->pfc.pushedX +
-                (lcdGetContext()->ly * xResolution)] = pixelData;
+        if (ppu_get_context()->pfc.line_x >= (lcd_get_context()->scroll_x % 8)) {
+            ppu_get_context()->video_buffer[ppu_get_context()->pfc.pushed_x +
+                (lcd_get_context()->ly * XRES)] = pixel_data;
 
-            ppuGetContext()->pfc.pushedX++;
+            ppu_get_context()->pfc.pushed_x++;
         }
 
-        ppuGetContext()->pfc.lineX++;
+        ppu_get_context()->pfc.line_x++;
     }
 }
 
-void pipelineProcess() {
-    ppuGetContext()->pfc.mapY = (lcdGetContext()->ly + lcdGetContext()->scrollY);
-    ppuGetContext()->pfc.mapX = (ppuGetContext()->pfc.fetchX + lcdGetContext()->scrollX);
-    ppuGetContext()->pfc.tileY = ((lcdGetContext()->ly + lcdGetContext()->scrollY) % 8) * 2;
+void pipeline_process() {
+    ppu_get_context()->pfc.map_y = (lcd_get_context()->ly + lcd_get_context()->scroll_y);
+    ppu_get_context()->pfc.map_x = (ppu_get_context()->pfc.fetch_x + lcd_get_context()->scroll_x);
+    ppu_get_context()->pfc.tile_y = ((lcd_get_context()->ly + lcd_get_context()->scroll_y) % 8) * 2;
 
-    if (!(ppuGetContext()->lineTicks & 1)) {
-        pipelineFetch();
+    if (!(ppu_get_context()->line_ticks & 1)) {
+        pipeline_fetch();
     }
 
-    pipelinePushPixel();
+    pipeline_push_pixel();
 }
 
-void pipelineFifoReset() {
-    while (ppuGetContext()->pfc.pixelFifo.size) {
-        pixelFifoPop();
+void pipeline_fifo_reset() {
+    while(ppu_get_context()->pfc.pixel_fifo.size) {
+        pixel_fifo_pop();
     }
 
-    ppuGetContext()->pfc.pixelFifo.head = 0;
+    ppu_get_context()->pfc.pixel_fifo.head = 0;
 }

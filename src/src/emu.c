@@ -1,50 +1,49 @@
 #include "../inc/emu.h"
 #include "../inc/cart.h"
 #include "../inc/cpu.h"
-#include "../inc/timer.h"
 #include "../inc/ui.h"
+#include "../inc/timer.h"
 #include "../inc/dma.h"
-
-//TODO ADD WIN32 ALTERNATIVE TO PTHREAD
-#include <stdio.h>
-#include <pthread.h>
-
 #include "../inc/ppu.h"
 
+//TODO ADD WIN32 ALTERNATIVE TO PTHREAD
+#include <pthread.h>
+#include <unistd.h>
+#include <stdio.h>
 
-//
-// Emu components:
-//
-// |Cart|
-// |CPU|
-// |Address Bus|
-// |PPU|
-// |Timer|
-//
-//
+/*
+  Emu components:
 
-static emuContext ctx;
+  |Cart|
+  |CPU|
+  |Address Bus|
+  |PPU|
+  |Timer|
 
-emuContext *emuGetContext() {
+*/
+
+static emu_context ctx;
+
+emu_context *emu_get_context() {
     return &ctx;
 }
 
-void *cpuRun(void *p) {
-    timerInit();
-    cpuInit();
-    ppuInit();
+void *cpu_run(void *p) {
+    timer_init();
+    cpu_init();
+    ppu_init();
 
     ctx.running = true;
     ctx.paused = false;
     ctx.ticks = 0;
 
-    while (ctx.running) {
+    while(ctx.running) {
         if (ctx.paused) {
             delay(10);
             continue;
         }
 
-        if (!cpuStep()) {
+        if (!cpu_step()) {
             printf("CPU Stopped\n");
             return 0;
         }
@@ -53,53 +52,53 @@ void *cpuRun(void *p) {
     return 0;
 }
 
-int emuRun(int argc, char **argv) {
+int emu_run(int argc, char **argv) {
     if (argc < 2) {
-        printf("Usage: emu <romfile>\n");
+        printf("Usage: emu <rom_file>\n");
         return -1;
     }
 
-    if (!cartLoad(argv[1])) {
-        printf("Failed to load ROM: %s\n", argv[1]);
+    if (!cart_load(argv[1])) {
+        printf("Failed to load ROM file: %s\n", argv[1]);
         return -2;
     }
 
-    printf("ROM Loaded..\n");
+    printf("Cart loaded..\n");
 
-    uiInit();
+    ui_init();
 
     pthread_t t1;
 
-    if (pthread_create(&t1, NULL, cpuRun, NULL)) {
-        fprintf(stderr, "Failed to create CPU thread\n");
+    if (pthread_create(&t1, NULL, cpu_run, NULL)) {
+        fprintf(stderr, "FAILED TO START MAIN CPU THREAD!\n");
         return -1;
     }
 
-    uint32_t previousFrame = 0;
+    u32 prev_frame = 0;
 
-    while (!ctx.die) {
+    while(!ctx.die) {
         usleep(1000);
-        uiHandleEvents();
+        ui_handle_events();
 
-        if (previousFrame != ppuGetContext()->currentFrame) {
-            uiUpdate();
+        if (prev_frame != ppu_get_context()->current_frame) {
+            ui_update();
         }
 
-        previousFrame = ppuGetContext()->currentFrame;
+        prev_frame = ppu_get_context()->current_frame;
     }
 
     return 0;
 }
 
-void emuCycles(int cpuCycles) {
+void emu_cycles(int cpu_cycles) {
 
-    for (int i = 0; i < cpuCycles; i++) {
+    for (int i=0; i<cpu_cycles; i++) {
         for (int n=0; n<4; n++) {
             ctx.ticks++;
-            timerTick();
-            ppuTick();
+            timer_tick();
+            ppu_tick();
         }
 
-        dmaTick();
+        dma_tick();
     }
 }

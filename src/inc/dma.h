@@ -3,9 +3,9 @@
 
 #include "common.h"
 
-void dmaStart(uint8_t start);
-void dmaTick();
+void dma_start(u8 start);
+void dma_tick();
 
-bool dmaTransferring();
+bool dma_transferring();
 
 #endif //DMA_H

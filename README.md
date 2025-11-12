@@ -7,7 +7,7 @@ as a way for me to learn Emulator Development
 # Progress
 
 Overall Progress
-[===       ] 30% (For better accuracy look at each section below)
+[======    ] 60% (For better accuracy look at each section below)
 
 CPU
 [==========] 100% Unprefixed CPU OP-Codes
@@ -17,7 +17,7 @@ Memory/Bus
 [==========] 100% Cartridge Read (ROM ONLY)
 [==========] 100% Echo RAM (0xE000-0xFDFF)
 [==========] 100% WRAM/HRAM Access
-[=====     ] 50%  Interrupt Register (IE/IF)
+[==========] 100% Interrupt Register (IE/IF)
 [          ] 0%   Cartridge Write
 [          ] 0%   IO Registers (0xFF00-0xFF7F)
 [          ] 0%   MBC1/MBC2/MBC3/MBC5 Support
@@ -25,9 +25,9 @@ Memory/Bus
 PPU/GPU
 [==========] 100% Sprite Attribute Memory/OAM (0xFE00-0xFE9F)
 [==========] 100% VRAM Access
-[          ] 0%   Tile Data (0x8000-0x97FF)
-[          ] 0%   BG Map 1 (0x9800-0x98FF)
-[          ] 0%   BG Map 2 (0x9C00-0x9FFF)
+[==========] 100% Tile Data (0x8000-0x97FF)
+[==========] 100% BG Map 1 (0x9800-0x98FF)
+[==========] 100% BG Map 2 (0x9C00-0x9FFF)
 [          ] 0%   Palette/Colours
 [          ] 0%   LCD Control/Status
 
@@ -39,7 +39,7 @@ Timers / Sound / Input
 
 Other Core / Future
 [==========] 100% DMA Transfer
-[=====     ] 50%  Halt / Stop CPU states
+[==========] 100% Halt / Stop CPU states
 [          ] 0%   GameBoy Boot ROM
 [          ] 0%   Double-speed mode / GBC support
 [          ] 0%   RTC (MBC3 timer)

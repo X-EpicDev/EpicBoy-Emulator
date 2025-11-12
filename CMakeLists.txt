@@ -11,21 +11,15 @@ add_executable(${PROJECT_NAME}
 
         #src files
         "src/src/bus.c" "src/src/cart.c" "src/src/cpu.c" "src/src/cpuFetch.c" "src/src/cpuProc.c" "src/src/cpuUtil.c"
-        "src/src/dbg.c" "src/src/emu.c" "src/src/instructions.c" "src/src/interrupts.c" "src/src/io.c" "src/src/ppu.c"
+        "src/src/dbg.c" "src/src/dma.c" "src/src/emu.c" "src/src/gamepad.c" "src/src/instructions.c"
+        "src/src/interrupts.c" "src/src/io.c" "src/src/lcd.c" "src/src/ppu.c" "src/src/ppuPipeline.c" "src/src/ppuSM.c"
         "src/src/ram.c" "src/src/stack.c" "src/src/timer.c" "src/src/ui.c"
 
         #include files
-        "src/inc/bus.h" "src/inc/cart.h" "src/inc/common.h" "src/inc/cpu.h" "src/inc/dbg.h" "src/inc/emu.h"
-        "src/inc/instructions.h" "src/inc/interrupts.h" "src/inc/io.h" "src/inc/ppu.h" "src/inc/ram.h" "src/inc/stack.h"
-        "src/inc/timer.h" "src/inc/ui.h"
-        src/inc/dma.h
-        src/src/dma.c
-        src/inc/lcd.h
-        src/src/lcd.c
-        src/inc/ppuSM.h
-        src/src/ppuSM.c
-        src/src/ppuPipeline.c
-        src/inc/gamepad.h
+        "src/inc/bus.h" "src/inc/cart.h" "src/inc/common.h" "src/inc/cpu.h" "src/inc/dbg.h" "src/inc/dma.h"
+        "src/inc/emu.h" "src/inc/gamepad.h" "src/inc/instructions.h" "src/inc/interrupts.h" "src/inc/io.h"
+        "src/inc/lcd.h" "src/inc/ppu.h" "src/inc/ppuSM.h" "src/inc/ram.h" "src/inc/stack.h" "src/inc/timer.h"
+        "src/inc/ui.h"
 )
 
 # ----- ADD SDL2 TO PROJECT ----- #

@@ -2,12 +2,12 @@
 
 <pre>
 The EpicBoy Emulator is a general GameBoy emulator written in Pure C, and was created 
-as a way for me to learn Emulator Development
+as a way for me to learn Emulator Development (I should have just made a Chip8)
 
 # Progress
 
-Overall Progress
-[======    ] 60% (For better accuracy look at each section below)
+Overall Progress (DMG)
+[========  ] 87% (For better accuracy look at each section below)
 
 CPU
 [==========] 100% Unprefixed CPU OP-Codes
@@ -18,30 +18,31 @@ Memory/Bus
 [==========] 100% Echo RAM (0xE000-0xFDFF)
 [==========] 100% WRAM/HRAM Access
 [==========] 100% Interrupt Register (IE/IF)
-[          ] 0%   Cartridge Write
-[          ] 0%   IO Registers (0xFF00-0xFF7F)
-[          ] 0%   MBC1/MBC2/MBC3/MBC5 Support
+[==========] 100% Cartridge Write
+[==========] 100% IO Registers (0xFF00-0xFF7F)
+[===       ] 33%  Working IO Registers (0xFF00-0xFF7F)
+[=         ] 12%  All Rom Types Support
 
-PPU/GPU
+DMG PPU/GPU
 [==========] 100% Sprite Attribute Memory/OAM (0xFE00-0xFE9F)
 [==========] 100% VRAM Access
 [==========] 100% Tile Data (0x8000-0x97FF)
 [==========] 100% BG Map 1 (0x9800-0x98FF)
 [==========] 100% BG Map 2 (0x9C00-0x9FFF)
-[          ] 0%   Palette/Colours
-[          ] 0%   LCD Control/Status
+[==========] 100% Palette/Colours
+[==========] 100% LCD Control/Status
 
 Timers / Sound / Input
 [==========] 100% Timer Registers (DIV, TIMA, TMA, TAC)
-[=====     ] 50%  Serial / Link Cable Support
-[          ] 0%   Joypad Input
-[          ] 0%   Sound Registers
+[==========] 100% Joypad Input
+[========= ] 90%  Serial Support
+[          ] 0%   Sound Registers/APU
 
 Other Core / Future
 [==========] 100% DMA Transfer
 [==========] 100% Halt / Stop CPU states
 [          ] 0%   GameBoy Boot ROM
-[          ] 0%   Double-speed mode / GBC support
+[          ] 0%   Double-speed mode
 [          ] 0%   RTC (MBC3 timer)
 
 # Credits

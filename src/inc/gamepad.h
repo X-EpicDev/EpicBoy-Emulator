@@ -1,6 +1,8 @@
 #ifndef GAMEPAD_H
 #define GAMEPAD_H
 
+#include "common.h"
+
 typedef struct {
     bool start;
     bool select;

@@ -3,11 +3,18 @@
 #include "../inc/cpu.h"
 #include "../inc/interrupts.h"
 #include <string.h>
+#include "../inc/cart.h"
 
 void pipeline_fifo_reset();
 void pipeline_process();
+bool window_visible();
 
 void increment_ly() {
+    if (window_visible() && lcd_get_context()->ly >= lcd_get_context()->win_y &&
+        lcd_get_context()->ly < lcd_get_context()->win_y + YRES) {
+            ppu_get_context()->window_line++;
+    }
+
     lcd_get_context()->ly++;
 
     if (lcd_get_context()->ly == lcd_get_context()->ly_compare) {
@@ -32,17 +39,17 @@ void load_line_sprites() {
         oam_entry e = ppu_get_context()->oam_ram[i];
 
         if (!e.x) {
-            //x = 0 means invisible
+            //x = 0 means not visible...
             continue;
         }
 
         if (ppu_get_context()->line_sprite_count >= 10) {
-            //max 10 sprites per line
+            //max 10 sprites per line...
             break;
         }
 
         if (e.y <= cur_y + 16 && e.y + sprite_height > cur_y + 16) {
-            //sprite is on cur line
+            //this sprite is on the current line.
 
             oam_line_entry *entry = &ppu_get_context()->line_entry_array[
                 ppu_get_context()->line_sprite_count++
@@ -58,12 +65,12 @@ void load_line_sprites() {
                 continue;
             }
 
-            //sorting time
+            //do some sorting...
 
             oam_line_entry *le = ppu_get_context()->line_sprites;
             oam_line_entry *prev = le;
 
-            while (le) {
+            while(le) {
                 if (le->entry.x > e.x) {
                     prev->next = entry;
                     entry->next = le;
@@ -94,7 +101,7 @@ void ppu_mode_oam() {
     }
 
     if (ppu_get_context()->line_ticks == 1) {
-        //read oam on first tick
+        //read oam on the first tick only...
         ppu_get_context()->line_sprites = 0;
         ppu_get_context()->line_sprite_count = 0;
 
@@ -123,6 +130,7 @@ void ppu_mode_vblank() {
         if (lcd_get_context()->ly >= LINES_PER_FRAME) {
             LCDS_MODE_SET(MODE_OAM);
             lcd_get_context()->ly = 0;
+            ppu_get_context()->window_line = 0;
         }
 
         ppu_get_context()->line_ticks = 0;
@@ -163,6 +171,10 @@ void ppu_mode_hblank() {
                 frame_count = 0;
 
                 printf("FPS: %d\n", fps);
+
+                if (cart_need_save()) {
+                    cart_battery_save();
+                }
             }
 
             frame_count++;

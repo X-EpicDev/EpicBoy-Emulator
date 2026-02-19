@@ -17,7 +17,7 @@ SDL_Renderer *sdlDebugRenderer;
 SDL_Texture *sdlDebugTexture;
 SDL_Surface *debugScreen;
 
-static int scale = 4;
+static int scale = 9;
 
 void ui_init() {
 
@@ -26,9 +26,9 @@ void ui_init() {
     TTF_Init();
     printf("TTF INIT\n");
 
-    SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
+    SDL_CreateWindowAndRenderer(SCREEN_WIDTH * scale, SCREEN_HEIGHT* scale, 0, &sdlWindow, &sdlRenderer);
 
-    screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
+    screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH * scale, SCREEN_HEIGHT * scale, 32,
                                             0x00FF0000,
                                             0x0000FF00,
                                             0x000000FF,
@@ -36,7 +36,7 @@ void ui_init() {
     sdlTexture = SDL_CreateTexture(sdlRenderer,
                                                 SDL_PIXELFORMAT_ARGB8888,
                                                 SDL_TEXTUREACCESS_STREAMING,
-                                                SCREEN_WIDTH, SCREEN_HEIGHT);
+                                                SCREEN_WIDTH * scale, SCREEN_HEIGHT * scale);
 
     SDL_CreateWindowAndRenderer(16 * 8 * scale, 32 * 8 * scale, 0,
         &sdlDebugWindow, &sdlDebugRenderer);
